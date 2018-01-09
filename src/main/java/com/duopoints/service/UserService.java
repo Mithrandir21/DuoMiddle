@@ -1,5 +1,7 @@
 package com.duopoints.service;
 
+import com.duopoints.db.Routines;
+import com.duopoints.db.routines.Alluserpoints;
 import com.duopoints.db.tables.Userdata;
 import com.duopoints.db.tables.pojos.User;
 import com.duopoints.db.tables.records.UserdataRecord;
@@ -51,5 +53,9 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return duoConfig.dsl().selectFrom(USER).fetchInto(User.class);
+    }
+
+    public int getAllUserPoint(@NotNull UUID userID){
+        return Integer.parseInt(Routines.alluserpoints(duoConfig, userID));
     }
 }

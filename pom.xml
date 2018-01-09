@@ -127,16 +127,20 @@
                 <configuration>
                     <jdbc>
                         <driver>org.postgresql.Driver</driver>
-                        <url>jdbc:postgresql://ec2-54-217-243-160.eu-west-1.compute.amazonaws.com:5432/d8j51skinbo7pc?sslmode=require</url>
-                        <user>dmrbsuillwlhzn</user>
-                        <password>4904bb747469eba1605da23b600404e98b69a80a2ba6fdfc5485c24da07d3abd</password>
+                        <url>jdbc:postgresql://ec2-54-217-243-160.eu-west-1.compute.amazonaws.com:5432/dap07r0sh2jl9u?sslmode=require</url>
+                        <user>qrcyvafbuitibk</user>
+                        <password>0d501b2f374276eb099022dc814235a1c090aafa58f7af690465f097fd3ab071</password>
                     </jdbc>
 
                     <generator>
                         <database>
                             <name>org.jooq.util.postgres.PostgresDatabase</name>
                             <includes>.*</includes>
-                            <excludes>user_signup_function</excludes>
+                            <excludes>
+                                user_signup_function
+                                | given_points_procedure
+                                | if_modified_func
+                                | update_modified_column</excludes>
                             <dateAsTimestamp>true</dateAsTimestamp>
                             <inputSchema>content</inputSchema>
 

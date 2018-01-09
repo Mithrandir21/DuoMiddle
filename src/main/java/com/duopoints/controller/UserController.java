@@ -36,6 +36,11 @@ public class UserController {
         return userService.getUser(userID);
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/getAllUserPoints")
+    public String getAllUserPoints(@RequestParam UUID userID){
+        return String.valueOf(userService.getAllUserPoint(userID));
+    }
+
     @RequestMapping(method = RequestMethod.GET, value = "/populateLevelReqs")
     public void populateLevelReq() {
         initService.populateLevelReq();
