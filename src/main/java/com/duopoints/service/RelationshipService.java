@@ -3,18 +3,22 @@ package com.duopoints.service;
 import com.duopoints.db.Routines;
 import com.duopoints.db.tables.pojos.Relationship;
 import com.duopoints.db.tables.pojos.RelationshipRequest;
+import com.duopoints.db.tables.pojos.RelbreakupRequest;
 import com.duopoints.db.tables.records.RelationshipAchievementListRecord;
 import com.duopoints.db.tables.records.RelationshipRequestRecord;
+import com.duopoints.db.tables.records.RelbreakupRequestRecord;
 import com.duopoints.errorhandling.ConflictException;
 import com.duopoints.errorhandling.NoMatchingRowException;
 import com.duopoints.models.RequestParameters;
 import com.duopoints.models.posts.NewRelationship;
+import com.duopoints.models.posts.NewRelationshipBreakupRequest;
 import com.duopoints.models.posts.NewRelationshipRequest;
 import org.jooq.Condition;
 import org.jooq.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
@@ -24,6 +28,7 @@ import java.util.UUID;
 import static com.duopoints.db.tables.Relationship.RELATIONSHIP;
 import static com.duopoints.db.tables.RelationshipAchievementList.RELATIONSHIP_ACHIEVEMENT_LIST;
 import static com.duopoints.db.tables.RelationshipRequest.RELATIONSHIP_REQUEST;
+import static com.duopoints.db.tables.RelbreakupRequest.RELBREAKUP_REQUEST;
 
 @Service
 public class RelationshipService {
@@ -121,6 +126,47 @@ public class RelationshipService {
             return relationshipRequestRecord.into(RelationshipRequest.class);
         } else {
             throw new NoMatchingRowException("No RelationshipRequest found matching requestID='" + requestID + "' having status " + RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_requested);
+        }
+    }
+
+
+    /************************
+     * RELATIONSHIP BREAKUP
+     ************************/
+
+    public RelbreakupRequest getActiveRelationshipBreakup(@NotNull UUID relationshipID) {
+        return duoConfig.dsl().selectFrom(RELBREAKUP_REQUEST)
+                .where(RELBREAKUP_REQUEST.RELATIONSHIPDB_ID.eq(relationshipID))
+                .and(RELBREAKUP_REQUEST.RELBREAKUPREQUEST_STATUS.eq(RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_status_processing))
+                .fetchOneInto(RelbreakupRequest.class); // There should never be more than a single active breakup request
+    }
+
+    public RelbreakupRequest requestRelationshipBreakup(@NotNull NewRelationshipBreakupRequest newBreakupRequest) {
+        // First check if any other Breakup requests exist for the RelationshipID with status as PROCESSING
+        if (getActiveRelationshipBreakup(newBreakupRequest.relID) != null) {
+            throw new ConflictException("Relationship already has a requested breakup");
+        }
+
+        return duoConfig.dsl().insertInto(RELBREAKUP_REQUEST)
+                .columns(RELBREAKUP_REQUEST.RELATIONSHIPDB_ID, RELBREAKUP_REQUEST.USERDB_ID, RELBREAKUP_REQUEST.RELBREAKUPREQUEST_COMMENT, RELBREAKUP_REQUEST.RELBREAKUPREQUEST_STATUS)
+                .values(newBreakupRequest.relID, newBreakupRequest.requestingUserID, newBreakupRequest.comment, RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_status_processing)
+                .returning()
+                .fetchOne()
+                .into(RelbreakupRequest.class);
+    }
+
+    public RelbreakupRequest setFinalRelBreakupRequestStatus(@NotNull UUID requestID, @NotNull String status){
+        RelbreakupRequestRecord relbreakupRequestRecord = duoConfig.dsl().update(RELBREAKUP_REQUEST)
+                .set(RELBREAKUP_REQUEST.RELBREAKUPREQUEST_STATUS, status)
+                .where(RELBREAKUP_REQUEST.RELBREAKUPREQUESTDB_ID.eq(requestID))
+                .and(RELBREAKUP_REQUEST.RELBREAKUPREQUEST_STATUS.eq(RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_status_processing))
+                .returning()
+                .fetchOne();
+
+        if (relbreakupRequestRecord != null) {
+            return relbreakupRequestRecord.into(RelbreakupRequest.class);
+        } else {
+            throw new NoMatchingRowException("No RelationshipBreakupRequest found matching requestID='" + requestID + "' having status " + RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_status_processing);
         }
     }
 }

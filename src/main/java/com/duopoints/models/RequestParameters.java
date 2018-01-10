@@ -178,6 +178,10 @@ public abstract class RequestParameters {
     public static final String REL_BREAKUP_REQUEST_rel_breakup_request_comment = "rel_breakup_request_comment";
     public static final String REL_BREAKUP_REQUEST_rel_breakup_request_status = "rel_breakup_request_status";
 
+    public static final String REL_BREAKUP_REQUEST_rel_breakup_request_status_completed = "COMPLETED";
+    public static final String REL_BREAKUP_REQUEST_rel_breakup_request_status_processing = "PROCESSING";
+    public static final String REL_BREAKUP_REQUEST_rel_breakup_request_status_cancelled = "CANCELLED";
+
 
     /*********************
      * RELATIONSHIP
