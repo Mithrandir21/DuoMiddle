@@ -1,7 +1,7 @@
 package com.duopoints.models.composites;
 
-import com.duopoints.models.core.Relationship;
-import com.duopoints.models.core.User;
+import com.duopoints.db.tables.pojos.Relationship;
+import com.duopoints.db.tables.pojos.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class CombinedRelationshipUsers extends Relationship {
