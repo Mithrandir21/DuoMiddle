@@ -1,12 +1,10 @@
 package com.duopoints.service;
 
 import com.duopoints.db.Routines;
-import com.duopoints.db.routines.Alluserpoints;
 import com.duopoints.db.tables.Userdata;
 import com.duopoints.db.tables.pojos.User;
 import com.duopoints.db.tables.records.UserdataRecord;
-import com.duopoints.errorhandling.NullResultException;
-import com.duopoints.models.UserReg;
+import com.duopoints.models.posts.UserReg;
 import org.jooq.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,12 +41,7 @@ public class UserService {
     }
 
     public User getUser(@NotNull UUID userID) {
-        User foundUser = duoConfig.dsl().selectFrom(USER).where(USER.USERDB_ID.eq(userID)).fetchOneInto(User.class);
-        if (foundUser != null) {
-            return foundUser;
-        } else {
-            throw new NullResultException();
-        }
+        return duoConfig.dsl().selectFrom(USER).where(USER.USERDB_ID.eq(userID)).fetchOneInto(User.class);
     }
 
     public List<User> getAllUsers() {
@@ -56,6 +49,6 @@ public class UserService {
     }
 
     public int getAllUserPoint(@NotNull UUID userID){
-        return Integer.parseInt(Routines.alluserpoints(duoConfig, userID));
+        return Routines.alluserpoints(duoConfig, userID);
     }
 }
