@@ -199,6 +199,12 @@ public abstract class RequestParameters {
     public static final String RELATIONSHIP_rel_desc = "rel_desc";
     public static final String RELATIONSHIP_rel_total_points = "rel_total_points";
 
+    public static final String RELATIONSHIP_status_dating = "DATING";
+    public static final String RELATIONSHIP_status_married = "MARRIED";
+    public static final String RELATIONSHIP_status_complicated = "COMPLICATED";
+    public static final String RELATIONSHIP_status_paused = "PAUSED";
+    public static final String RELATIONSHIP_status_ended = "ENDED";
+
 
     /*********************
      * RELATIONSHIP ACHIEVEMENT LIST
@@ -237,8 +243,15 @@ public abstract class RequestParameters {
     public static final String RELATIONSHIP_REQUEST_rel_request_sender_user_uuid = "rel_request_sender_user_uuid";
     public static final String RELATIONSHIP_REQUEST_rel_request_recipient_user_name = "rel_request_recipient_user_name";
     public static final String RELATIONSHIP_REQUEST_rel_request_recipient_user_email = "rel_request_recipient_user_email";
+    public static final String RELATIONSHIP_REQUEST_rel_request_recipient_user_db_id = "rel_request_recepient_user_db_id";
     public static final String RELATIONSHIP_REQUEST_rel_request_status = "rel_request_status";
     public static final String RELATIONSHIP_REQUEST_rel_request_comment = "rel_request_comment";
+
+    public static final String RELATIONSHIP_REQUEST_rel_request_status_requested = "REQUESTED";
+    public static final String RELATIONSHIP_REQUEST_rel_request_status_accepted = "ACCEPTED";
+    public static final String RELATIONSHIP_REQUEST_rel_request_status_rejected = "REJECTED";
+    public static final String RELATIONSHIP_REQUEST_rel_request_status_inactive = "INACTIVE";
+
 
 
     /*********************
