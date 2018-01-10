@@ -1,6 +1,7 @@
 package com.duopoints.controller;
 
 import com.duopoints.db.tables.pojos.User;
+import com.duopoints.db.tables.pojos.UserAddress;
 import com.duopoints.errorhandling.NullResultException;
 import com.duopoints.models.posts.UserReg;
 import com.duopoints.service.InitService;
@@ -22,6 +23,15 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @RequestMapping(method = RequestMethod.GET, value = "/populateLevelReqs")
+    public void populateLevelReq() {
+        initService.populateLevelReq();
+    }
+
+    /************
+     * USER
+     ************/
+
     @RequestMapping(value = "/regUser", method = RequestMethod.POST, consumes = "application/json")
     public User registerUser(@RequestBody UserReg userReg) {
         return userService.regUser(userReg);
@@ -42,17 +52,34 @@ public class UserController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/getAllUserPoints")
+    @RequestMapping(method = RequestMethod.GET, value = "/getAllUserPoints", produces = MediaType.TEXT_PLAIN_VALUE)
     public Integer getAllUserPoints(@RequestParam UUID userID){
         return userService.getAllUserPoint(userID);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/populateLevelReqs")
-    public void populateLevelReq() {
-        initService.populateLevelReq();
+
+
+    /************
+     * USER ADR
+     ************/
+
+    @RequestMapping(method = RequestMethod.GET, value = "/getUserAddress", produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserAddress getUserAddress(@RequestParam UUID userAdrID){
+        UserAddress userAddress = userService.getUserAddress(userAdrID);
+        if (userAddress != null) {
+            return userAddress;
+        } else {
+            throw new NullResultException();
+        }
     }
 
-//    public List<User> getFriends(@RequestBody UUID userID) {
-//
-//    }
+    @RequestMapping(method = RequestMethod.PATCH, value = "/updateUserAddress", produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserAddress updateUserAddress(@RequestBody UserAddress userAddress){
+        UserAddress userAddressUpdated = userService.updateUserAddress(userAddress);
+        if (userAddressUpdated != null) {
+            return userAddressUpdated;
+        } else {
+            throw new NullResultException();
+        }
+    }
 }
