@@ -1,5 +1,6 @@
 package com.duopoints.errorhandling;
 
+import org.postgresql.util.PSQLException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -27,5 +28,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(NoMatchingRowException.class)
     protected ResponseEntity handleNoMatchingRowException(NoMatchingRowException ex) {
         return new ResponseEntity<>(Collections.singletonMap("no_match_found", ex.matchNotFoundCause), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(PSQLException.class)
+    protected ResponseEntity handlePSQLException(PSQLException ex) {
+        return new ResponseEntity<>(Collections.singletonMap("error_cause", ex.getServerErrorMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
