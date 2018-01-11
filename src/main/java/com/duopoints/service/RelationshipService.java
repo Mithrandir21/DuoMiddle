@@ -204,7 +204,7 @@ public class RelationshipService {
                 .into(RelationshipBreakupRequest.class);
     }
 
-    public RelationshipBreakupRequest setFinalRelBreakupRequestStatus(@NotNull UUID requestID, @NotNull String status) {
+    public RelationshipBreakupRequest setFinalRelationshipBreakupRequestStatus(@NotNull UUID requestID, @NotNull String status) {
         // First we retrieve the Request
         RelationshipBreakupRequest relbreakupRequest = duoConfig.dsl().selectFrom(RELATIONSHIP_BREAKUP_REQUEST)
                 .where(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUESTDB_ID.eq(requestID)).fetchOneInto(RelationshipBreakupRequest.class);

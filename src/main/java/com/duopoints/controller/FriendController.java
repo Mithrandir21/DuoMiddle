@@ -23,13 +23,17 @@ public class FriendController {
      *****************/
 
     @RequestMapping(method = RequestMethod.GET, value = "/getFriendRequest", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Friendrequest getFriendRequest(@RequestParam UUID friendRequestID){
+    public Friendrequest getFriendRequest(@RequestParam UUID friendRequestID) {
         return Utils.returnOrException(friendService.getFriendRequest(friendRequestID));
     }
 
-
     @RequestMapping(method = RequestMethod.POST, value = "/createFriendRequest", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Friendrequest createFriendRequest(@RequestBody NewFriendRequest newFriendRequest){
+    public Friendrequest createFriendRequest(@RequestBody NewFriendRequest newFriendRequest) {
         return friendService.createFriendRequest(newFriendRequest);
+    }
+
+    @RequestMapping(method = RequestMethod.PATCH, value = "/setFinalFriendRequestStatus", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Friendrequest setFinalFriendRequestStatus(@RequestParam UUID requestID, @RequestParam String finalStatus) {
+        return friendService.setFinalFriendRequestStatus(requestID, finalStatus);
     }
 }

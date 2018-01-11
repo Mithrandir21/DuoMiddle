@@ -53,6 +53,10 @@ public abstract class RequestParameters {
     public static final String FRIEND_user_uuid = "user_uuid";
     public static final String FRIEND_friends_list_uuid = "friends_list_uuid";
     public static final String FRIEND_friend_rights_uuid = "friend_rights_uuid";
+    public static final String FRIEND_friendship_status = "friendship_status";
+
+    public static final String FRIEND_friendship_status_active = "ACTIVE";
+    public static final String FRIEND_friendship_status_ended = "ENDED";
 
 
     /*********************
@@ -83,14 +87,6 @@ public abstract class RequestParameters {
     public static final String FRIEND_RIGHTS_friend_can_see_relationship = "friend_can_see_relationship";
     public static final String FRIEND_RIGHTS_friend_can_see_timeline = "friend_can_see_timeline";
     public static final String FRIEND_RIGHTS_friend_can_see_history = "friend_can_see_history";
-
-
-    /*********************
-     * FRIENDS LIST
-     *********************/
-
-    public static final String FRIENDS_LIST_SEGMENT_NAME = "friends_list";
-    public static final String FRIENDS_LIST_friends_list_uuid = "friends_list_uuid";
 
 
     /*********************
@@ -373,7 +369,4 @@ public abstract class RequestParameters {
 
     public static final String CREATE_FRIENDSHIP_user1 = "user1";
     public static final String CREATE_FRIENDSHIP_user2 = "user2";
-
-    public static final String CREATE_FRIENDSHIP_user_uuid = USERS_user_uuid;
-    public static final String CREATE_FRIENDSHIP_user_friend_list_uuid = FRIENDS_LIST_friends_list_uuid;
 }

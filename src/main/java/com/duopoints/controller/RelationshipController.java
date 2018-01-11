@@ -64,8 +64,8 @@ public class RelationshipController {
         return relationshipService.requestRelationshipBreakup(newBreakupRequest);
     }
 
-    @RequestMapping(method = RequestMethod.PATCH, value = "/setFinalRelBreakupRequestStatus", produces = MediaType.APPLICATION_JSON_VALUE)
-    public RelationshipBreakupRequest setFinalRelBreakupRequestStatus(@RequestParam UUID requestID, @RequestParam String finalStatus) {
-        return relationshipService.setFinalRelBreakupRequestStatus(requestID, finalStatus);
+    @RequestMapping(method = RequestMethod.PATCH, value = "/setFinalRelationshipBreakupRequestStatus", produces = MediaType.APPLICATION_JSON_VALUE)
+    public RelationshipBreakupRequest setFinalRelationshipBreakupRequestStatus(@RequestParam UUID requestID, @RequestParam String finalStatus) {
+        return relationshipService.setFinalRelationshipBreakupRequestStatus(requestID, finalStatus);
     }
 }
