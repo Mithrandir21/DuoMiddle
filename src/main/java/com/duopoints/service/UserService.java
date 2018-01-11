@@ -4,6 +4,7 @@ import com.duopoints.db.Routines;
 import com.duopoints.db.tables.Userdata;
 import com.duopoints.db.tables.pojos.User;
 import com.duopoints.db.tables.pojos.UserAddress;
+import com.duopoints.db.tables.pojos.UserLevel;
 import com.duopoints.db.tables.records.UserAddressRecord;
 import com.duopoints.db.tables.records.UserdataRecord;
 import com.duopoints.errorhandling.NoMatchingRowException;
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 import static com.duopoints.db.tables.User.USER;
 import static com.duopoints.db.tables.UserAddress.USER_ADDRESS;
+import static com.duopoints.db.tables.UserLevel.USER_LEVEL;
 import static org.jooq.impl.DSL.row;
 
 @Service
@@ -86,5 +88,14 @@ public class UserService {
         } else {
             throw new NoMatchingRowException("No UserAddress found with ID='" + newUserAddress.getAddressdbId() + "'");
         }
+    }
+
+
+    /**************
+     * USER LEVEL
+     **************/
+
+    public UserLevel getUserLevel(@NotNull UUID userLevelID) {
+        return duoConfig.dsl().selectFrom(USER_LEVEL).where(USER_LEVEL.USER_LEVELDB_ID.eq(userLevelID)).fetchOneInto(UserLevel.class);
     }
 }

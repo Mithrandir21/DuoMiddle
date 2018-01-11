@@ -1,9 +1,9 @@
 package com.duopoints.controller;
 
+import com.duopoints.Utils;
 import com.duopoints.db.tables.pojos.Relationship;
 import com.duopoints.db.tables.pojos.RelationshipRequest;
 import com.duopoints.db.tables.pojos.RelbreakupRequest;
-import com.duopoints.errorhandling.NullResultException;
 import com.duopoints.models.posts.NewRelationship;
 import com.duopoints.models.posts.NewRelationshipBreakupRequest;
 import com.duopoints.models.posts.NewRelationshipRequest;
@@ -28,12 +28,7 @@ public class RelationshipController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/getRelationship", produces = MediaType.APPLICATION_JSON_VALUE)
     public Relationship getRelationship(@RequestParam UUID relID) {
-        Relationship rel = relationshipService.getRelationship(relID);
-        if (rel != null) {
-            return rel;
-        } else {
-            throw new NullResultException();
-        }
+        return Utils.returnOrException(relationshipService.getRelationship(relID));
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/createRelationship", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -67,12 +62,7 @@ public class RelationshipController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/getActiveRelationshipBreakupRequest", produces = MediaType.APPLICATION_JSON_VALUE)
     public RelbreakupRequest getActiveRelationshipBreakupRequest(@RequestParam UUID relID) {
-        RelbreakupRequest activeRelationshipBreakup = relationshipService.getActiveRelationshipBreakup(relID);
-        if (activeRelationshipBreakup != null) {
-            return activeRelationshipBreakup;
-        } else {
-            throw new NullResultException();
-        }
+        return Utils.returnOrException(relationshipService.getActiveRelationshipBreakup(relID));
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/requestRelationshipBreakup", produces = MediaType.APPLICATION_JSON_VALUE)

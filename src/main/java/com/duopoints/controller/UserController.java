@@ -1,8 +1,9 @@
 package com.duopoints.controller;
 
+import com.duopoints.Utils;
 import com.duopoints.db.tables.pojos.User;
 import com.duopoints.db.tables.pojos.UserAddress;
-import com.duopoints.errorhandling.NullResultException;
+import com.duopoints.db.tables.pojos.UserLevel;
 import com.duopoints.models.posts.UserReg;
 import com.duopoints.service.InitService;
 import com.duopoints.service.UserService;
@@ -44,19 +45,13 @@ public class UserController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/getUser", produces = MediaType.APPLICATION_JSON_VALUE)
     public User getUser(@RequestParam UUID userID) {
-        User foundUser = userService.getUser(userID);
-        if (foundUser != null) {
-            return foundUser;
-        } else {
-            throw new NullResultException();
-        }
+        return Utils.returnOrException(userService.getUser(userID));
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/getAllUserPoints", produces = MediaType.TEXT_PLAIN_VALUE)
-    public Integer getAllUserPoints(@RequestParam UUID userID){
+    public Integer getAllUserPoints(@RequestParam UUID userID) {
         return userService.getAllUserPoint(userID);
     }
-
 
 
     /************
@@ -64,22 +59,22 @@ public class UserController {
      ************/
 
     @RequestMapping(method = RequestMethod.GET, value = "/getUserAddress", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserAddress getUserAddress(@RequestParam UUID userAdrID){
-        UserAddress userAddress = userService.getUserAddress(userAdrID);
-        if (userAddress != null) {
-            return userAddress;
-        } else {
-            throw new NullResultException();
-        }
+    public UserAddress getUserAddress(@RequestParam UUID userAdrID) {
+        return Utils.returnOrException(userService.getUserAddress(userAdrID));
     }
 
     @RequestMapping(method = RequestMethod.PATCH, value = "/updateUserAddress", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserAddress updateUserAddress(@RequestBody UserAddress userAddress){
-        UserAddress userAddressUpdated = userService.updateUserAddress(userAddress);
-        if (userAddressUpdated != null) {
-            return userAddressUpdated;
-        } else {
-            throw new NullResultException();
-        }
+    public UserAddress updateUserAddress(@RequestBody UserAddress userAddress) {
+        return Utils.returnOrException(userService.updateUserAddress(userAddress));
+    }
+
+
+    /************
+     * USER ADR
+     ************/
+
+    @RequestMapping(method = RequestMethod.GET, value = "/getUserLevel", produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserLevel getUserLevel(@RequestParam UUID userAdrID) {
+        return Utils.returnOrException(userService.getUserLevel(userAdrID));
     }
 }
