@@ -66,6 +66,13 @@ public abstract class RequestParameters {
     public static final String FRIEND_REQUEST_friend_request_comment = "friend_request_comment";
     public static final String FRIEND_REQUEST_friend_request_status = "friend_request_status";
 
+    public static final String FRIEND_REQUEST_friend_request_status_sent = "SENT";
+    public static final String FRIEND_REQUEST_friend_request_status_waiting_for_recipient = "WAITING_FOR_RECIPIENT";
+    public static final String FRIEND_REQUEST_friend_request_status_completed = "COMPLETED";
+    public static final String FRIEND_REQUEST_friend_request_status_rejected = "REJECTED";
+    public static final String FRIEND_REQUEST_friend_request_status_cancelled = "CANCELLED";
+    public static final String FRIEND_REQUEST_friend_request_status_inactive = "INACTIVE";
+
 
     /*********************
      * FRIEND RIGHTS
