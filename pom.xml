@@ -127,9 +127,9 @@
                 <configuration>
                     <jdbc>
                         <driver>org.postgresql.Driver</driver>
-                        <url>jdbc:postgresql://ec2-54-217-243-160.eu-west-1.compute.amazonaws.com:5432/dap07r0sh2jl9u?sslmode=require</url>
-                        <user>qrcyvafbuitibk</user>
-                        <password>0d501b2f374276eb099022dc814235a1c090aafa58f7af690465f097fd3ab071</password>
+                        <url>jdbc:postgresql://ec2-54-217-243-160.eu-west-1.compute.amazonaws.com:5432/d3qa2abreh5t35?sslmode=require</url>
+                        <user>erezhdsnondwom</user>
+                        <password>f612bbca6171daffc87e54a485fca41a84be52d74290a042610abd68fbcfe7f0</password>
                     </jdbc>
 
                     <generator>

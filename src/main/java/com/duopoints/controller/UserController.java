@@ -48,7 +48,7 @@ public class UserController {
         return Utils.returnOrException(userService.getUser(userID));
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/getAllUserPoints", produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(method = RequestMethod.GET, value = "/getAllUserPoints")
     public Integer getAllUserPoints(@RequestParam UUID userID) {
         return userService.getAllUserPoint(userID);
     }

@@ -2,7 +2,6 @@ package com.duopoints.controller;
 
 import com.duopoints.Utils;
 import com.duopoints.db.tables.pojos.Friendrequest;
-import com.duopoints.db.tables.pojos.Friendslist;
 import com.duopoints.models.posts.NewFriendRequest;
 import com.duopoints.service.FriendService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +16,6 @@ public class FriendController {
 
     @Autowired
     private FriendService friendService;
-
-    /***************
-     * FRIENDS LIST
-     ***************/
-
-    @RequestMapping(method = RequestMethod.GET, value = "/getFriendsList", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Friendslist getFriendsList(@RequestParam UUID friendsListID) {
-        return Utils.returnOrException(friendService.getFriendsList(friendsListID));
-    }
 
 
     /*****************

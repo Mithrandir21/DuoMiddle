@@ -1,7 +1,6 @@
 package com.duopoints.service;
 
 import com.duopoints.db.tables.pojos.Friendrequest;
-import com.duopoints.db.tables.pojos.Friendslist;
 import com.duopoints.errorhandling.ConflictException;
 import com.duopoints.models.RequestParameters;
 import com.duopoints.models.posts.NewFriendRequest;
@@ -14,7 +13,6 @@ import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 import static com.duopoints.db.tables.Friendrequest.FRIENDREQUEST;
-import static com.duopoints.db.tables.Friendslist.FRIENDSLIST;
 
 @Service
 public class FriendService {
@@ -22,15 +20,6 @@ public class FriendService {
     @Autowired
     @Qualifier("configuration")
     private Configuration duoConfig;
-
-
-    /***************
-     * FRIENDS LIST
-     ***************/
-
-    public Friendslist getFriendsList(@NotNull UUID friendsListID) {
-        return duoConfig.dsl().selectFrom(FRIENDSLIST).where(FRIENDSLIST.FRIENDSLISTDB_ID.eq(friendsListID)).fetchOneInto(Friendslist.class);
-    }
 
 
     /*****************
@@ -62,5 +51,7 @@ public class FriendService {
                 .fetchOne()
                 .into(Friendrequest.class);
     }
+
+
 
 }
