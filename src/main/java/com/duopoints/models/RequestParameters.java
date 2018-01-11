@@ -178,12 +178,12 @@ public abstract class RequestParameters {
      * REL BREAKUP REQUEST
      *********************/
 
-    public static final String REL_BREAKUP_REQUEST_SEGMENT_NAME = "rel_breakup_request";
-    public static final String REL_BREAKUP_REQUEST_rel_breakup_request_uuid = "rel_breakup_request_uuid";
-    public static final String REL_BREAKUP_REQUEST_rel_breakup_requesting_user_uuid = "rel_breakup_requesting_user_uuid";
-    public static final String REL_BREAKUP_REQUEST_rel_breakup_request_relationship_uuid = "rel_breakup_request_relationship_uuid";
-    public static final String REL_BREAKUP_REQUEST_rel_breakup_request_comment = "rel_breakup_request_comment";
-    public static final String REL_BREAKUP_REQUEST_rel_breakup_request_status = "rel_breakup_request_status";
+    public static final String REL_BREAKUP_REQUEST_SEGMENT_NAME = "relationship_breakup_request";
+    public static final String REL_BREAKUP_REQUEST_rel_breakup_request_uuid = "relationship_breakup_requestdb_id";
+    public static final String REL_BREAKUP_REQUEST_rel_breakup_requesting_user_uuid = "relationship_breakup_requesting_user_uuid";
+    public static final String REL_BREAKUP_REQUEST_rel_breakup_request_relationship_uuid = "relationship_breakup_request_relationship_uuid";
+    public static final String REL_BREAKUP_REQUEST_rel_breakup_request_comment = "relationship_breakup_request_comment";
+    public static final String REL_BREAKUP_REQUEST_rel_breakup_request_status = "relationship_breakup_request_status";
 
     public static final String REL_BREAKUP_REQUEST_rel_breakup_request_status_completed = "COMPLETED";
     public static final String REL_BREAKUP_REQUEST_rel_breakup_request_status_processing = "PROCESSING";
@@ -257,6 +257,8 @@ public abstract class RequestParameters {
     public static final String RELATIONSHIP_REQUEST_rel_request_recipient_user_db_id = "rel_request_recepient_user_db_id";
     public static final String RELATIONSHIP_REQUEST_rel_request_status = "rel_request_status";
     public static final String RELATIONSHIP_REQUEST_rel_request_comment = "rel_request_comment";
+    public static final String RELATIONSHIP_REQUEST_rel_desired_status = "relrequest_desired_rel_status";
+    public static final String RELATIONSHIP_REQUEST_rel_is_secret = "relrequest_rel_issecret";
 
     public static final String RELATIONSHIP_REQUEST_rel_request_status_requested = "REQUESTED";
     public static final String RELATIONSHIP_REQUEST_rel_request_status_accepted = "ACCEPTED";

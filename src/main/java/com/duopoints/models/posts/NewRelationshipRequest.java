@@ -22,6 +22,12 @@ public class NewRelationshipRequest {
     @JsonProperty(RequestParameters.RELATIONSHIP_REQUEST_rel_request_comment)
     public String requestComment;
 
+    @JsonProperty(RequestParameters.RELATIONSHIP_REQUEST_rel_desired_status)
+    public String requestRelDesiredStatus;
+
+    @JsonProperty(RequestParameters.RELATIONSHIP_REQUEST_rel_is_secret)
+    public boolean requestRelisSecret;
+
 
     /************
      * GETTERS
@@ -52,6 +58,15 @@ public class NewRelationshipRequest {
         return requestComment;
     }
 
+    @JsonProperty(RequestParameters.RELATIONSHIP_REQUEST_rel_desired_status)
+    public String getRequestRelDesiredStatus() {
+        return requestRelDesiredStatus;
+    }
+
+    @JsonProperty(RequestParameters.RELATIONSHIP_REQUEST_rel_is_secret)
+    public boolean isRequestRelisSecret() {
+        return requestRelisSecret;
+    }
 
     /************
      * SETTERS
@@ -80,5 +95,15 @@ public class NewRelationshipRequest {
     @JsonProperty(RequestParameters.RELATIONSHIP_REQUEST_rel_request_comment)
     public void setRequestComment(String requestComment) {
         this.requestComment = requestComment;
+    }
+
+    @JsonProperty(RequestParameters.RELATIONSHIP_REQUEST_rel_desired_status)
+    public void setRequestRelDesiredStatus(String requestRelDesiredStatus) {
+        this.requestRelDesiredStatus = requestRelDesiredStatus;
+    }
+
+    @JsonProperty(RequestParameters.RELATIONSHIP_REQUEST_rel_is_secret)
+    public void setRequestRelisSecret(boolean requestRelisSecret) {
+        this.requestRelisSecret = requestRelisSecret;
     }
 }

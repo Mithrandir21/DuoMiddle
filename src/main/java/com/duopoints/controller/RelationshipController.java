@@ -2,9 +2,8 @@ package com.duopoints.controller;
 
 import com.duopoints.Utils;
 import com.duopoints.db.tables.pojos.Relationship;
+import com.duopoints.db.tables.pojos.RelationshipBreakupRequest;
 import com.duopoints.db.tables.pojos.RelationshipRequest;
-import com.duopoints.db.tables.pojos.RelbreakupRequest;
-import com.duopoints.models.posts.NewRelationship;
 import com.duopoints.models.posts.NewRelationshipBreakupRequest;
 import com.duopoints.models.posts.NewRelationshipRequest;
 import com.duopoints.service.RelationshipService;
@@ -29,11 +28,6 @@ public class RelationshipController {
     @RequestMapping(method = RequestMethod.GET, value = "/getRelationship", produces = MediaType.APPLICATION_JSON_VALUE)
     public Relationship getRelationship(@RequestParam UUID relID) {
         return Utils.returnOrException(relationshipService.getRelationship(relID));
-    }
-
-    @RequestMapping(method = RequestMethod.POST, value = "/createRelationship", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Relationship createRelationship(@RequestBody NewRelationship newRelationship) {
-        return relationshipService.createRelationship(newRelationship);
     }
 
     /*************************
@@ -61,17 +55,17 @@ public class RelationshipController {
      *************************/
 
     @RequestMapping(method = RequestMethod.GET, value = "/getActiveRelationshipBreakupRequest", produces = MediaType.APPLICATION_JSON_VALUE)
-    public RelbreakupRequest getActiveRelationshipBreakupRequest(@RequestParam UUID relID) {
+    public RelationshipBreakupRequest getActiveRelationshipBreakupRequest(@RequestParam UUID relID) {
         return Utils.returnOrException(relationshipService.getActiveRelationshipBreakup(relID));
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/requestRelationshipBreakup", produces = MediaType.APPLICATION_JSON_VALUE)
-    public RelbreakupRequest requestRelationshipBreakup(@RequestBody NewRelationshipBreakupRequest newBreakupRequest) {
+    public RelationshipBreakupRequest requestRelationshipBreakup(@RequestBody NewRelationshipBreakupRequest newBreakupRequest) {
         return relationshipService.requestRelationshipBreakup(newBreakupRequest);
     }
 
     @RequestMapping(method = RequestMethod.PATCH, value = "/setFinalRelBreakupRequestStatus", produces = MediaType.APPLICATION_JSON_VALUE)
-    public RelbreakupRequest setFinalRelBreakupRequestStatus(@RequestParam UUID requestID, @RequestParam String finalStatus) {
+    public RelationshipBreakupRequest setFinalRelBreakupRequestStatus(@RequestParam UUID requestID, @RequestParam String finalStatus) {
         return relationshipService.setFinalRelBreakupRequestStatus(requestID, finalStatus);
     }
 }
