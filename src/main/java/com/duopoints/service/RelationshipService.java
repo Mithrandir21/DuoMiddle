@@ -42,13 +42,13 @@ public class RelationshipService {
      *********************/
 
     public Relationship getRelationship(@NotNull UUID relID) {
-        return duo.selectFrom(RELATIONSHIP).where(RELATIONSHIP.RELATIONSHIPDB_ID.eq(relID)).fetchOneInto(Relationship.class);
+        return duo.selectFrom(RELATIONSHIP).where(RELATIONSHIP.RELATIONSHIP_UUID.eq(relID)).fetchOneInto(Relationship.class);
     }
 
     public Relationship getActiveUserRelationship(@NotNull UUID userID) {
         return duo.selectFrom(RELATIONSHIP)
-                .where(RELATIONSHIP.USERDB_ID_1.eq(userID))
-                .or(RELATIONSHIP.USERDB_ID_2.eq(userID))
+                .where(RELATIONSHIP.USER_UUID_1.eq(userID))
+                .or(RELATIONSHIP.USER_UUID_2.eq(userID))
                 .and(RELATIONSHIP.STATUS.notEqual(RequestParameters.RELATIONSHIP_status_ended))
                 .fetchOneInto(Relationship.class);
     }
@@ -72,8 +72,8 @@ public class RelationshipService {
 
         // Create Relationship
         return duo.insertInto(RELATIONSHIP)
-                .columns(RELATIONSHIP.USERDB_ID_1, RELATIONSHIP.USERDB_ID_2, RELATIONSHIP.STATUS, RELATIONSHIP.ISSECRET, RELATIONSHIP.RELACHLISTDB_ID)
-                .values(userOne, userTwo, relStatus, isSecret, relationshipAchievementListRecord.getRelachlistdbId())
+                .columns(RELATIONSHIP.USER_UUID_1, RELATIONSHIP.USER_UUID_2, RELATIONSHIP.STATUS, RELATIONSHIP.IS_SECRET, RELATIONSHIP.RELATIONSHIP_ACHIEVEMENT_LIST_UUID)
+                .values(userOne, userTwo, relStatus, isSecret, relationshipAchievementListRecord.getRelationshipAchievementListUuid())
                 .returning()
                 .fetchOne()
                 .into(Relationship.class);
@@ -82,7 +82,7 @@ public class RelationshipService {
     private Relationship setRelationshipStatus(@NotNull UUID relID, @NotNull String status) {
         RelationshipRecord relationshipRecord = duo.update(RELATIONSHIP)
                 .set(RELATIONSHIP.STATUS, status)
-                .where(RELATIONSHIP.RELATIONSHIPDB_ID.eq(relID))
+                .where(RELATIONSHIP.RELATIONSHIP_UUID.eq(relID))
                 .returning()
                 .fetchOne();
 
@@ -109,9 +109,9 @@ public class RelationshipService {
         }
 
         // Check if a request exists with similar data
-        Condition sameRecipientID = RELATIONSHIP_REQUEST.RELREQUEST_SENDER_USERDB_ID.eq(request.senderUserID).or(RELATIONSHIP_REQUEST.RELREQUEST_SENDER_USERDB_ID.eq(request.senderUserID));
-        Condition sameRecipientEmail = RELATIONSHIP_REQUEST.RELREQUEST_SENDER_USERDB_ID.eq(request.senderUserID).or(RELATIONSHIP_REQUEST.RELREQUEST_RECEPIENT_USER_EMAIL.eq(request.recipientUserEmail));
-        Condition statusNotAcceptedOrRejected = RELATIONSHIP_REQUEST.RELREQUEST_STATUS.notIn(Arrays.asList(RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_accepted, RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_rejected));
+        Condition sameRecipientID = RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_SENDER_USER_UUID.eq(request.senderUserID).or(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_SENDER_USER_UUID.eq(request.senderUserID));
+        Condition sameRecipientEmail = RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_SENDER_USER_UUID.eq(request.senderUserID).or(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_RECEPIENT_USER_EMAIL.eq(request.recipientUserEmail));
+        Condition statusNotAcceptedOrRejected = RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_STATUS.notIn(Arrays.asList(RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_accepted, RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_rejected));
 
         if (duo.selectFrom(RELATIONSHIP_REQUEST).where(sameRecipientID).or(sameRecipientEmail).and(statusNotAcceptedOrRejected).fetch().size() > 0) {
             throw new ConflictException("A request already exists that is not Accepted or Rejected");
@@ -119,10 +119,10 @@ public class RelationshipService {
 
         // At this point no request exists between the sender and recipient that is not in accepted or rejected state
         return duo.insertInto(RELATIONSHIP_REQUEST)
-                .columns(RELATIONSHIP_REQUEST.RELREQUEST_SENDER_USERDB_ID, RELATIONSHIP_REQUEST.RELREQUEST_RECEPIENT_USER_NAME,
-                        RELATIONSHIP_REQUEST.RELREQUEST_RECEPIENT_USER_EMAIL, RELATIONSHIP_REQUEST.RELREQUEST_RECEPIENT_USERDB_ID,
-                        RELATIONSHIP_REQUEST.RELREQUEST_COMMENT, RELATIONSHIP_REQUEST.RELREQUEST_DESIRED_REL_STATUS, RELATIONSHIP_REQUEST.RELREQUEST_REL_ISSECRET,
-                        RELATIONSHIP_REQUEST.RELREQUEST_STATUS)
+                .columns(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_SENDER_USER_UUID, RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_RECEPIENT_USER_NAME,
+                        RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_RECEPIENT_USER_EMAIL, RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_RECEPIENT_USER_UUID,
+                        RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_COMMENT, RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_DESIRED_REL_STATUS, RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_REL_IS_SECRET,
+                        RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_STATUS)
                 .values(request.senderUserID, request.recipientUserName, request.recipientUserEmail, request.recipientUserID,
                         request.requestComment, request.requestRelDesiredStatus, request.requestRelisSecret,
                         RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_requested)
@@ -132,7 +132,7 @@ public class RelationshipService {
     }
 
     public List<RelationshipRequest> getRelationshipRequestsSentByUser(@NotNull UUID userID) {
-        return duo.selectFrom(RELATIONSHIP_REQUEST).where(RELATIONSHIP_REQUEST.RELREQUEST_SENDER_USERDB_ID.eq(userID)).fetchInto(RelationshipRequest.class);
+        return duo.selectFrom(RELATIONSHIP_REQUEST).where(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_SENDER_USER_UUID.eq(userID)).fetchInto(RelationshipRequest.class);
     }
 
     /**
@@ -143,23 +143,23 @@ public class RelationshipService {
     public RelationshipRequest setFinalRelationshipRequestStatus(@NotNull UUID requestID, @NotNull String status) {
         // First we retrieve the Request
         RelationshipRequest relationshipRequest = duo.selectFrom(RELATIONSHIP_REQUEST)
-                .where(RELATIONSHIP_REQUEST.RELREQUESTDB_ID.eq(requestID)).fetchOneInto(RelationshipRequest.class);
+                .where(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_UUID.eq(requestID)).fetchOneInto(RelationshipRequest.class);
 
         if (relationshipRequest == null) {
             throw new NoMatchingRowException("No RelationshipRequest found matching requestID='" + requestID + "'");
         }
 
         // If the Request is anything other than REQUESTED, fail.
-        if (!relationshipRequest.getRelrequestStatus().equalsIgnoreCase(RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_requested)) {
-            throw new ConflictException("RelationshipRequest has status:'" + relationshipRequest.getRelrequestStatus() + "'");
+        if (!relationshipRequest.getRelationshipRequestStatus().equalsIgnoreCase(RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_requested)) {
+            throw new ConflictException("RelationshipRequest has status:'" + relationshipRequest.getRelationshipRequestStatus() + "'");
         }
 
         // If the status is ACCEPTED, we must first create a new Relationship
         if (status.equalsIgnoreCase(RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_accepted)) {
-            if (createRelationship(relationshipRequest.getRelrequestSenderUserdbId(),
-                    relationshipRequest.getRelrequestRecepientUserdbId(),
-                    relationshipRequest.getRelrequestDesiredRelStatus(),
-                    relationshipRequest.getRelrequestRelIssecret()) == null) {
+            if (createRelationship(relationshipRequest.getRelationshipRequestSenderUserUuid(),
+                    relationshipRequest.getRelationshipRequestRecepientUserUuid(),
+                    relationshipRequest.getRelationshipRequestDesiredRelStatus(),
+                    relationshipRequest.getRelationshipRequestRelIsSecret()) == null) {
                 throw new NoMatchingRowException("No Relationship created! Error!");
             }
         }
@@ -167,9 +167,9 @@ public class RelationshipService {
 
         // Now set the Status of the Request
         RelationshipRequestRecord relationshipRequestRecord = duo.update(RELATIONSHIP_REQUEST)
-                .set(RELATIONSHIP_REQUEST.RELREQUEST_STATUS, status)
-                .where(RELATIONSHIP_REQUEST.RELREQUESTDB_ID.eq(requestID))
-                .and(RELATIONSHIP_REQUEST.RELREQUEST_STATUS.eq(RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_requested))
+                .set(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_STATUS, status)
+                .where(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_UUID.eq(requestID))
+                .and(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_STATUS.eq(RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_requested))
                 .returning()
                 .fetchOne();
 
@@ -187,7 +187,7 @@ public class RelationshipService {
 
     public RelationshipBreakupRequest getActiveRelationshipBreakup(@NotNull UUID relationshipID) {
         return duo.selectFrom(RELATIONSHIP_BREAKUP_REQUEST)
-                .where(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIPDB_ID.eq(relationshipID))
+                .where(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_UUID.eq(relationshipID))
                 .and(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_STATUS.eq(RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_status_processing))
                 .fetchOneInto(RelationshipBreakupRequest.class); // There should never be more than a single active breakup request
     }
@@ -199,7 +199,7 @@ public class RelationshipService {
         }
 
         return duo.insertInto(RELATIONSHIP_BREAKUP_REQUEST)
-                .columns(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIPDB_ID, RELATIONSHIP_BREAKUP_REQUEST.USERDB_ID, RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_COMMENT, RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_STATUS)
+                .columns(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_UUID, RELATIONSHIP_BREAKUP_REQUEST.USER_UUID, RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_COMMENT, RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_STATUS)
                 .values(newBreakupRequest.relID, newBreakupRequest.requestingUserID, newBreakupRequest.comment, RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_status_processing)
                 .returning()
                 .fetchOne()
@@ -210,7 +210,7 @@ public class RelationshipService {
     public RelationshipBreakupRequest setFinalRelationshipBreakupRequestStatus(@NotNull UUID requestID, @NotNull String status) {
         // First we retrieve the Request
         RelationshipBreakupRequest relbreakupRequest = duo.selectFrom(RELATIONSHIP_BREAKUP_REQUEST)
-                .where(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUESTDB_ID.eq(requestID)).fetchOneInto(RelationshipBreakupRequest.class);
+                .where(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_UUID.eq(requestID)).fetchOneInto(RelationshipBreakupRequest.class);
 
         if (relbreakupRequest == null) {
             throw new NoMatchingRowException("No RelbreakupRequest found matching requestID='" + requestID + "'");
@@ -223,7 +223,7 @@ public class RelationshipService {
 
         // If the Status is COMPLETED, we must first set the Status of the Relationship to ENDED
         if (status.equalsIgnoreCase(RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_status_completed)) {
-            if (setRelationshipStatus(relbreakupRequest.getRelationshipdbId(), RequestParameters.RELATIONSHIP_status_ended) == null) {
+            if (setRelationshipStatus(relbreakupRequest.getRelationshipUuid(), RequestParameters.RELATIONSHIP_status_ended) == null) {
                 throw new NoMatchingRowException("No Relationship found! Error!");
             }
         }
@@ -231,7 +231,7 @@ public class RelationshipService {
 
         RelationshipBreakupRequestRecord relbreakupRequestRecord = duo.update(RELATIONSHIP_BREAKUP_REQUEST)
                 .set(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_STATUS, status)
-                .where(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUESTDB_ID.eq(requestID))
+                .where(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_UUID.eq(requestID))
                 .and(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_STATUS.eq(RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_status_processing))
                 .returning()
                 .fetchOne();

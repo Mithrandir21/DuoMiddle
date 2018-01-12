@@ -1,11 +1,10 @@
 package com.duopoints.controller;
 
 import com.duopoints.Utils;
-import com.duopoints.db.tables.pojos.User;
+import com.duopoints.db.tables.Userdata;
 import com.duopoints.db.tables.pojos.UserAddress;
 import com.duopoints.db.tables.pojos.UserLevel;
 import com.duopoints.models.posts.UserReg;
-import com.duopoints.service.InitService;
 import com.duopoints.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -28,18 +26,13 @@ public class UserController {
      * USER
      ************/
 
-    @RequestMapping(value = "/regUser", method = RequestMethod.POST, consumes = "application/json")
-    public User registerUser(@RequestBody UserReg userReg) {
+    @RequestMapping(method = RequestMethod.POST, value = "/regUser", consumes = "application/json")
+    public Userdata registerUser(@RequestBody UserReg userReg) {
         return userService.regUser(userReg);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/getUsers", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<User> getUsers() {
-        return userService.getAllUsers();
-    }
-
     @RequestMapping(method = RequestMethod.GET, value = "/getUser", produces = MediaType.APPLICATION_JSON_VALUE)
-    public User getUser(@RequestParam UUID userID) {
+    public Userdata getUser(@RequestParam UUID userID) {
         return Utils.returnOrException(userService.getUser(userID));
     }
 

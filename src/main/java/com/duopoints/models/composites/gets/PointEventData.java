@@ -1,13 +1,13 @@
 package com.duopoints.models.composites.gets;
 
+import com.duopoints.db.tables.pojos.PointEvent;
 import com.duopoints.db.tables.pojos.Pointdata;
-import com.duopoints.db.tables.pojos.Pointevent;
 
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
-public class PointEventData extends Pointevent {
+public class PointEventData extends PointEvent {
 
     private List<Pointdata> pointdata;
 
@@ -18,7 +18,7 @@ public class PointEventData extends Pointevent {
         this.pointdata = pointdata;
     }
 
-    public PointEventData(Pointevent value, List<Pointdata> pointdata) {
+    public PointEventData(PointEvent value, List<Pointdata> pointdata) {
         super(value);
         this.pointdata = pointdata;
     }

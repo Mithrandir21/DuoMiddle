@@ -2,7 +2,6 @@ package com.duopoints.service;
 
 import com.duopoints.db.Routines;
 import com.duopoints.db.tables.Userdata;
-import com.duopoints.db.tables.pojos.User;
 import com.duopoints.db.tables.pojos.UserAddress;
 import com.duopoints.db.tables.pojos.UserLevel;
 import com.duopoints.db.tables.records.UserAddressRecord;
@@ -15,12 +14,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
 import java.util.UUID;
 
 import static com.duopoints.db.tables.User.USER;
 import static com.duopoints.db.tables.UserAddress.USER_ADDRESS;
 import static com.duopoints.db.tables.UserLevel.USER_LEVEL;
+import static com.duopoints.db.tables.Userdata.USERDATA;
 import static org.jooq.impl.DSL.row;
 
 @Service
@@ -34,13 +33,13 @@ public class UserService {
      * USER
      **********/
 
-    public User regUser(@NotNull UserReg userReg) {
+    public Userdata regUser(@NotNull UserReg userReg) {
         UserdataRecord userdataRecord = duo
-                .insertInto(Userdata.USERDATA,
-                        Userdata.USERDATA.ADR_COUNTRY, Userdata.USERDATA.ADR_CITY,
-                        Userdata.USERDATA.USER_AUTHPROVIDER, Userdata.USERDATA.USER_AUTH_ID,
-                        Userdata.USERDATA.USER_EMAIL, Userdata.USERDATA.USER_FIRSTNAME, Userdata.USERDATA.USER_LASTNAME, Userdata.USERDATA.USER_NICKNAME,
-                        Userdata.USERDATA.USER_GENDER, Userdata.USERDATA.USER_AGE)
+                .insertInto(USERDATA,
+                        USERDATA.ADR_COUNTRY, USERDATA.ADR_CITY,
+                        USERDATA.USER_AUTH_PROVIDER, USERDATA.USER_AUTH_UUID,
+                        USERDATA.USER_EMAIL, USERDATA.USER_FIRSTNAME, USERDATA.USER_LASTNAME, USERDATA.USER_NICKNAME,
+                        USERDATA.USER_GENDER, USERDATA.USER_AGE)
                 .values(userReg.country, userReg.city,
                         userReg.auth_provider, userReg.auth_id,
                         userReg.email, userReg.firstname, userReg.lastname, userReg.nickname,
@@ -48,15 +47,11 @@ public class UserService {
                 .returning()
                 .fetchOne();
 
-        return getUser(userdataRecord.getUserdbId());
+        return getUser(userdataRecord.getUserUuid());
     }
 
-    public User getUser(@NotNull UUID userID) {
-        return duo.selectFrom(USER).where(USER.USERDB_ID.eq(userID)).fetchOneInto(User.class);
-    }
-
-    public List<User> getAllUsers() {
-        return duo.selectFrom(USER).fetchInto(User.class);
+    public Userdata getUser(@NotNull UUID userID) {
+        return duo.selectFrom(USERDATA).where(USER.USER_UUID.eq(userID)).fetchOneInto(Userdata.class);
     }
 
     public int getAllUserPoint(@NotNull UUID userID) {
@@ -69,23 +64,21 @@ public class UserService {
      ************/
 
     public UserAddress getUserAddress(@NotNull UUID adrID) {
-        return duo.selectFrom(USER_ADDRESS).where(USER_ADDRESS.ADDRESSDB_ID.eq(adrID)).fetchOneInto(UserAddress.class);
+        return duo.selectFrom(USER_ADDRESS).where(USER_ADDRESS.ADDRESS_UUID.eq(adrID)).fetchOneInto(UserAddress.class);
     }
 
     public UserAddress updateUserAddress(@NotNull UserAddress newUserAddress) {
         UserAddressRecord userAddressRecord = duo.update(USER_ADDRESS)
-                .set(row(USER_ADDRESS.ADR_CITY, USER_ADDRESS.ADR_COUNTRY, USER_ADDRESS.ADR_REGION,
-                        USER_ADDRESS.ADR_USER_LASTKNOWNLOCATION_1, USER_ADDRESS.ADR_USER_LASTKNOWNLOCATION_2, USER_ADDRESS.ADR_USER_LASTKNOWNLOCATION_3),
-                        row(newUserAddress.getAdrCity(), newUserAddress.getAdrCountry(), newUserAddress.getAdrRegion(),
-                                newUserAddress.getAdrUserLastknownlocation_1(), newUserAddress.getAdrUserLastknownlocation_2(), newUserAddress.getAdrUserLastknownlocation_3()))
-                .where(USER_ADDRESS.ADDRESSDB_ID.eq(newUserAddress.getAddressdbId()))
+                .set(row(USER_ADDRESS.ADR_CITY, USER_ADDRESS.ADR_COUNTRY, USER_ADDRESS.ADR_REGION),
+                        row(newUserAddress.getAdrCity(), newUserAddress.getAdrCountry(), newUserAddress.getAdrRegion()))
+                .where(USER_ADDRESS.ADDRESS_UUID.eq(newUserAddress.getAddressUuid()))
                 .returning()
                 .fetchOne();
 
         if (userAddressRecord != null) {
             return userAddressRecord.into(UserAddress.class);
         } else {
-            throw new NoMatchingRowException("No UserAddress found with ID='" + newUserAddress.getAddressdbId() + "'");
+            throw new NoMatchingRowException("No UserAddress found with ID='" + newUserAddress.getAddressUuid() + "'");
         }
     }
 
@@ -95,6 +88,6 @@ public class UserService {
      **************/
 
     public UserLevel getUserLevel(@NotNull UUID userLevelID) {
-        return duo.selectFrom(USER_LEVEL).where(USER_LEVEL.USER_LEVELDB_ID.eq(userLevelID)).fetchOneInto(UserLevel.class);
+        return duo.selectFrom(USER_LEVEL).where(USER_LEVEL.USER_LEVEL_UUID.eq(userLevelID)).fetchOneInto(UserLevel.class);
     }
 }
