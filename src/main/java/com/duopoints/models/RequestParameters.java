@@ -253,8 +253,8 @@ public abstract class RequestParameters {
     public static final String RELATIONSHIP_REQUEST_rel_request_recipient_user_db_id = "rel_request_recepient_user_db_id";
     public static final String RELATIONSHIP_REQUEST_rel_request_status = "rel_request_status";
     public static final String RELATIONSHIP_REQUEST_rel_request_comment = "rel_request_comment";
-    public static final String RELATIONSHIP_REQUEST_rel_desired_status = "relrequest_desired_rel_status";
-    public static final String RELATIONSHIP_REQUEST_rel_is_secret = "relrequest_rel_issecret";
+    public static final String RELATIONSHIP_REQUEST_rel_desired_status = "rel_request_desired_rel_status";
+    public static final String RELATIONSHIP_REQUEST_rel_is_secret = "rel_request_rel_issecret";
 
     public static final String RELATIONSHIP_REQUEST_rel_request_status_requested = "REQUESTED";
     public static final String RELATIONSHIP_REQUEST_rel_request_status_accepted = "ACCEPTED";

@@ -9,10 +9,11 @@ import com.duopoints.errorhandling.NoMatchingRowException;
 import com.duopoints.models.RequestParameters;
 import com.duopoints.models.posts.NewFriendRequest;
 import org.jooq.Condition;
-import org.jooq.Configuration;
+import org.jooq.impl.DefaultDSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
@@ -25,8 +26,8 @@ import static com.duopoints.db.tables.Friendship.FRIENDSHIP;
 public class FriendService {
 
     @Autowired
-    @Qualifier("configuration")
-    private Configuration duoConfig;
+    @Qualifier("dsl")
+    private DefaultDSLContext duo;
 
 
     /*****************
@@ -34,12 +35,12 @@ public class FriendService {
      *****************/
 
     public Friendrequest getFriendRequest(@NotNull UUID friendRequestID) {
-        return duoConfig.dsl().selectFrom(FRIENDREQUEST).where(FRIENDREQUEST.FRIENDREQUESTDB_ID.eq(friendRequestID)).fetchOneInto(Friendrequest.class);
+        return duo.selectFrom(FRIENDREQUEST).where(FRIENDREQUEST.FRIENDREQUESTDB_ID.eq(friendRequestID)).fetchOneInto(Friendrequest.class);
     }
 
     public Friendrequest createFriendRequest(@NotNull NewFriendRequest newFriendRequest) {
         // First check if there already exists a friend request for the given Sender and Recipient that is not WAITING_FOR_RECIPIENT
-        Friendrequest friendrequest = duoConfig.dsl().selectFrom(FRIENDREQUEST)
+        Friendrequest friendrequest = duo.selectFrom(FRIENDREQUEST)
                 .where(FRIENDREQUEST.FRIENDREQUEST_SENDER_USERDB_ID.eq(newFriendRequest.requestSenderID),
                         FRIENDREQUEST.FRIENDREQUEST_RECIPIENT_USERDB_ID.eq(newFriendRequest.requestRecipientID))
                 .and(FRIENDREQUEST.FRIENDREQUEST_STATUS.in(RequestParameters.FRIEND_REQUEST_friend_request_status_sent,
@@ -50,7 +51,7 @@ public class FriendService {
             throw new ConflictException("A friend request already exists with the status:" + friendrequest.getFriendrequestStatus());
         }
 
-        return duoConfig.dsl().insertInto(FRIENDREQUEST)
+        return duo.insertInto(FRIENDREQUEST)
                 .columns(FRIENDREQUEST.FRIENDREQUEST_SENDER_USERDB_ID, FRIENDREQUEST.FRIENDREQUEST_RECIPIENT_USERDB_ID,
                         FRIENDREQUEST.FRIENDREQUEST_COMMENT, FRIENDREQUEST.FRIENDREQUEST_STATUS)
                 .values(newFriendRequest.requestSenderID, newFriendRequest.requestRecipientID, newFriendRequest.requestComment,
@@ -60,9 +61,10 @@ public class FriendService {
                 .into(Friendrequest.class);
     }
 
+    @Transactional
     public Friendrequest setFinalFriendRequestStatus(@NotNull UUID requestID, @NotNull String status) {
         // First we retrieve the Request
-        Friendrequest friendrequest = duoConfig.dsl().selectFrom(FRIENDREQUEST)
+        Friendrequest friendrequest = duo.selectFrom(FRIENDREQUEST)
                 .where(FRIENDREQUEST.FRIENDREQUESTDB_ID.eq(requestID)).fetchOneInto(Friendrequest.class);
 
         if (friendrequest == null) {
@@ -81,7 +83,7 @@ public class FriendService {
         }
 
         // Now set the Status of the Request
-        FriendrequestRecord friendrequestRecord = duoConfig.dsl().update(FRIENDREQUEST)
+        FriendrequestRecord friendrequestRecord = duo.update(FRIENDREQUEST)
                 .set(FRIENDREQUEST.FRIENDREQUEST_STATUS, status)
                 .where(FRIENDREQUEST.FRIENDREQUESTDB_ID.eq(requestID))
                 .and(FRIENDREQUEST.FRIENDREQUEST_STATUS.eq(RequestParameters.FRIEND_REQUEST_friend_request_status_waiting_for_recipient))
@@ -104,7 +106,7 @@ public class FriendService {
         Condition friends1 = FRIENDSHIP.USERONEDB_ID.eq(userOne).and(FRIENDSHIP.USERTWODB_ID.eq(userTwo));
         Condition friends2 = FRIENDSHIP.USERONEDB_ID.eq(userTwo).and(FRIENDSHIP.USERTWODB_ID.eq(userOne));
 
-        return duoConfig.dsl().selectFrom(FRIENDSHIP).where(friends1).or(friends2)
+        return duo.selectFrom(FRIENDSHIP).where(friends1).or(friends2)
                 .and(FRIENDSHIP.FRIENDSHIPSTATUS.eq(RequestParameters.FRIEND_friendship_status_active))
                 .fetchOneInto(Friendship.class);
     }
@@ -116,11 +118,11 @@ public class FriendService {
         }
 
         // At this point, we need to create FriendRights for each friend in this relationship
-        Friendrights rightsOne = duoConfig.dsl().insertInto(FRIENDRIGHTS).defaultValues().returning().fetchOne().into(Friendrights.class);
-        Friendrights rightsTwo = duoConfig.dsl().insertInto(FRIENDRIGHTS).defaultValues().returning().fetchOne().into(Friendrights.class);
+        Friendrights rightsOne = duo.insertInto(FRIENDRIGHTS).defaultValues().returning().fetchOne().into(Friendrights.class);
+        Friendrights rightsTwo = duo.insertInto(FRIENDRIGHTS).defaultValues().returning().fetchOne().into(Friendrights.class);
 
 
-        return duoConfig.dsl().insertInto(FRIENDSHIP)
+        return duo.insertInto(FRIENDSHIP)
                 .columns(FRIENDSHIP.USERONEDB_ID, FRIENDSHIP.USERTWODB_ID, FRIENDSHIP.FRIENDONERIGHTSDB_ID, FRIENDSHIP.FRIENDTWORIGHTSDB_ID, FRIENDSHIP.FRIENDSHIPSTATUS)
                 .values(userOne, userTwo, rightsOne.getFriendrightsdbId(), rightsTwo.getFriendrightsdbId(), RequestParameters.FRIEND_friendship_status_active)
                 .returning()

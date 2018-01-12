@@ -8,9 +8,8 @@ import com.duopoints.db.tables.pojos.UserLevel;
 import com.duopoints.db.tables.records.UserAddressRecord;
 import com.duopoints.db.tables.records.UserdataRecord;
 import com.duopoints.errorhandling.NoMatchingRowException;
-import com.duopoints.errorhandling.NullResultException;
 import com.duopoints.models.posts.UserReg;
-import org.jooq.Configuration;
+import org.jooq.impl.DefaultDSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -28,15 +27,15 @@ import static org.jooq.impl.DSL.row;
 public class UserService {
 
     @Autowired
-    @Qualifier("configuration")
-    private Configuration duoConfig;
+    @Qualifier("dsl")
+    private DefaultDSLContext duo;
 
     /**********
      * USER
      **********/
 
     public User regUser(@NotNull UserReg userReg) {
-        UserdataRecord userdataRecord = duoConfig.dsl()
+        UserdataRecord userdataRecord = duo
                 .insertInto(Userdata.USERDATA,
                         Userdata.USERDATA.ADR_COUNTRY, Userdata.USERDATA.ADR_CITY,
                         Userdata.USERDATA.USER_AUTHPROVIDER, Userdata.USERDATA.USER_AUTH_ID,
@@ -53,15 +52,15 @@ public class UserService {
     }
 
     public User getUser(@NotNull UUID userID) {
-        return duoConfig.dsl().selectFrom(USER).where(USER.USERDB_ID.eq(userID)).fetchOneInto(User.class);
+        return duo.selectFrom(USER).where(USER.USERDB_ID.eq(userID)).fetchOneInto(User.class);
     }
 
     public List<User> getAllUsers() {
-        return duoConfig.dsl().selectFrom(USER).fetchInto(User.class);
+        return duo.selectFrom(USER).fetchInto(User.class);
     }
 
     public int getAllUserPoint(@NotNull UUID userID) {
-        return Routines.alluserpoints(duoConfig, userID);
+        return Routines.alluserpoints(duo.configuration(), userID);
     }
 
 
@@ -70,11 +69,11 @@ public class UserService {
      ************/
 
     public UserAddress getUserAddress(@NotNull UUID adrID) {
-        return duoConfig.dsl().selectFrom(USER_ADDRESS).where(USER_ADDRESS.ADDRESSDB_ID.eq(adrID)).fetchOneInto(UserAddress.class);
+        return duo.selectFrom(USER_ADDRESS).where(USER_ADDRESS.ADDRESSDB_ID.eq(adrID)).fetchOneInto(UserAddress.class);
     }
 
     public UserAddress updateUserAddress(@NotNull UserAddress newUserAddress) {
-        UserAddressRecord userAddressRecord = duoConfig.dsl().update(USER_ADDRESS)
+        UserAddressRecord userAddressRecord = duo.update(USER_ADDRESS)
                 .set(row(USER_ADDRESS.ADR_CITY, USER_ADDRESS.ADR_COUNTRY, USER_ADDRESS.ADR_REGION,
                         USER_ADDRESS.ADR_USER_LASTKNOWNLOCATION_1, USER_ADDRESS.ADR_USER_LASTKNOWNLOCATION_2, USER_ADDRESS.ADR_USER_LASTKNOWNLOCATION_3),
                         row(newUserAddress.getAdrCity(), newUserAddress.getAdrCountry(), newUserAddress.getAdrRegion(),
@@ -83,7 +82,7 @@ public class UserService {
                 .returning()
                 .fetchOne();
 
-        if( userAddressRecord != null ){
+        if (userAddressRecord != null) {
             return userAddressRecord.into(UserAddress.class);
         } else {
             throw new NoMatchingRowException("No UserAddress found with ID='" + newUserAddress.getAddressdbId() + "'");
@@ -96,6 +95,6 @@ public class UserService {
      **************/
 
     public UserLevel getUserLevel(@NotNull UUID userLevelID) {
-        return duoConfig.dsl().selectFrom(USER_LEVEL).where(USER_LEVEL.USER_LEVELDB_ID.eq(userLevelID)).fetchOneInto(UserLevel.class);
+        return duo.selectFrom(USER_LEVEL).where(USER_LEVEL.USER_LEVELDB_ID.eq(userLevelID)).fetchOneInto(UserLevel.class);
     }
 }
