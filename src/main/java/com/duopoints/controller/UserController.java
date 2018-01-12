@@ -8,9 +8,12 @@ import com.duopoints.models.posts.UserReg;
 import com.duopoints.service.InitService;
 import com.duopoints.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,15 +22,7 @@ import java.util.UUID;
 public class UserController {
 
     @Autowired
-    private InitService initService;
-
-    @Autowired
     private UserService userService;
-
-    @RequestMapping(method = RequestMethod.GET, value = "/populateLevelReqs")
-    public void populateLevelReq() {
-        initService.populateLevelReq();
-    }
 
     /************
      * USER
@@ -49,8 +44,8 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/getAllUserPoints")
-    public Integer getAllUserPoints(@RequestParam UUID userID) {
-        return userService.getAllUserPoint(userID);
+    public ResponseEntity getAllUserPoints(@RequestParam UUID userID) {
+        return new ResponseEntity<>(Collections.singletonMap("total_points", userService.getAllUserPoint(userID)), HttpStatus.OK);
     }
 
 
