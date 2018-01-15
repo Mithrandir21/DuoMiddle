@@ -1,8 +1,8 @@
 package com.duopoints.service;
 
 import com.duopoints.db.tables.pojos.Point;
-import com.duopoints.db.tables.pojos.Pointdata;
 import com.duopoints.db.tables.pojos.PointEvent;
+import com.duopoints.db.tables.pojos.Pointdata;
 import com.duopoints.db.tables.records.PointRecord;
 import com.duopoints.models.composites.gets.PointEventData;
 import com.duopoints.models.composites.posts.NewPointEvent;
@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.duopoints.db.tables.Pointdata.POINTDATA;
 import static com.duopoints.db.tables.PointEvent.POINT_EVENT;
+import static com.duopoints.db.tables.Pointdata.POINTDATA;
 
 @Service
 public class PointService {

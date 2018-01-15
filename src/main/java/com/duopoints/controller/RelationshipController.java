@@ -30,6 +30,13 @@ public class RelationshipController {
         return Utils.returnOrException(relationshipService.getRelationship(relID));
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/getActiveUserRelationship", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Relationship getActiveUserRelationship(@RequestParam UUID userID) {
+        return Utils.returnOrException(relationshipService.getActiveUserRelationship(userID));
+    }
+
+
+
     /*************************
      * RELATIONSHIP REQUESTS
      *************************/
