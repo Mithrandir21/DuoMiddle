@@ -1,7 +1,7 @@
 package com.duopoints.service;
 
 import com.duopoints.db.Routines;
-import com.duopoints.db.tables.Userdata;
+import com.duopoints.db.tables.pojos.Userdata;
 import com.duopoints.db.tables.pojos.UserAddress;
 import com.duopoints.db.tables.pojos.UserLevel;
 import com.duopoints.db.tables.records.UserAddressRecord;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
-import static com.duopoints.db.tables.User.USER;
 import static com.duopoints.db.tables.UserAddress.USER_ADDRESS;
 import static com.duopoints.db.tables.UserLevel.USER_LEVEL;
 import static com.duopoints.db.tables.Userdata.USERDATA;
@@ -51,7 +50,7 @@ public class UserService {
     }
 
     public Userdata getUser(@NotNull UUID userID) {
-        return duo.selectFrom(USERDATA).where(USER.USER_UUID.eq(userID)).fetchOneInto(Userdata.class);
+        return duo.selectFrom(USERDATA).where(USERDATA.USER_UUID.eq(userID)).fetchOneInto(Userdata.class);
     }
 
     public int getAllUserPoint(@NotNull UUID userID) {

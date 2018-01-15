@@ -147,15 +147,15 @@
                         <forcedTypes>
                             <forcedType>
                                 <name>TEXT</name> <!-- From CITEXT -->
-                                <expression>content.user.User_Firstname</expression>
+                                <expression>content.user_info.User_Firstname</expression>
                             </forcedType>
                             <forcedType>
                                 <name>TEXT</name> <!-- From CITEXT -->
-                                <expression>content.user.User_Lastname</expression>
+                                <expression>content.user_info.User_Lastname</expression>
                             </forcedType>
                             <forcedType>
                                 <name>TEXT</name> <!-- From CITEXT -->
-                                <expression>content.user.User_Nickname</expression>
+                                <expression>content.user_info.User_Nickname</expression>
                             </forcedType>
                             <forcedType>
                                 <name>TEXT</name> <!-- From CITEXT -->

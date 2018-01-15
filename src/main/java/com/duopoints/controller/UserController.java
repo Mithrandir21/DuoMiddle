@@ -1,7 +1,7 @@
 package com.duopoints.controller;
 
 import com.duopoints.Utils;
-import com.duopoints.db.tables.Userdata;
+import com.duopoints.db.tables.pojos.Userdata;
 import com.duopoints.db.tables.pojos.UserAddress;
 import com.duopoints.db.tables.pojos.UserLevel;
 import com.duopoints.models.posts.UserReg;
@@ -26,7 +26,7 @@ public class UserController {
      * USER
      ************/
 
-    @RequestMapping(method = RequestMethod.POST, value = "/regUser", consumes = "application/json")
+    @RequestMapping(method = RequestMethod.POST, value = "/regUser", consumes = "application/json", produces = MediaType.APPLICATION_JSON_VALUE)
     public Userdata registerUser(@RequestBody UserReg userReg) {
         return userService.regUser(userReg);
     }
