@@ -250,11 +250,11 @@ public abstract class RequestParameters {
     public static final String RELATIONSHIP_REQUEST_rel_request_sender_user_uuid = "rel_request_sender_user_uuid";
     public static final String RELATIONSHIP_REQUEST_rel_request_recipient_user_name = "rel_request_recipient_user_name";
     public static final String RELATIONSHIP_REQUEST_rel_request_recipient_user_email = "rel_request_recipient_user_email";
-    public static final String RELATIONSHIP_REQUEST_rel_request_recipient_user_db_id = "rel_request_recepient_user_db_id";
+    public static final String RELATIONSHIP_REQUEST_rel_request_recipient_user_db_id = "rel_request_recipient_user_uuid";
     public static final String RELATIONSHIP_REQUEST_rel_request_status = "rel_request_status";
     public static final String RELATIONSHIP_REQUEST_rel_request_comment = "rel_request_comment";
     public static final String RELATIONSHIP_REQUEST_rel_desired_status = "rel_request_desired_rel_status";
-    public static final String RELATIONSHIP_REQUEST_rel_is_secret = "rel_request_rel_issecret";
+    public static final String RELATIONSHIP_REQUEST_rel_is_secret = "rel_request_rel_is_secret";
 
     public static final String RELATIONSHIP_REQUEST_rel_request_status_requested = "REQUESTED";
     public static final String RELATIONSHIP_REQUEST_rel_request_status_accepted = "ACCEPTED";
@@ -312,8 +312,6 @@ public abstract class RequestParameters {
      *********************/
 
     public static final String USER_REG_SEGMENT_NAME = "users";
-    public static final String USER_REG_user_country= "adr_country";
-    public static final String USER_REG_user_city = "adr_city";
     public static final String USER_REG_user_auth_provider = "user_auth_provider";
     public static final String USER_REG_user_auth_id = "user_auth_id";
     public static final String USER_REG_user_email = "user_email";
@@ -322,6 +320,8 @@ public abstract class RequestParameters {
     public static final String USER_REG_user_nickname = "user_nickname";
     public static final String USER_REG_user_gender = "user_gender";
     public static final String USER_REG_user_age = "user_age";
+    public static final String USER_REG_user_country= "adr_country";
+    public static final String USER_REG_user_city = "adr_city";
 
 
     /*********************

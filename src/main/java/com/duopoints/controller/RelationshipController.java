@@ -61,14 +61,14 @@ public class RelationshipController {
      * RELATIONSHIP BREAKUP
      *************************/
 
-    @RequestMapping(method = RequestMethod.GET, value = "/getActiveRelationshipBreakupRequest", produces = MediaType.APPLICATION_JSON_VALUE)
-    public RelationshipBreakupRequest getActiveRelationshipBreakupRequest(@RequestParam UUID relID) {
-        return Utils.returnOrException(relationshipService.getActiveRelationshipBreakup(relID));
-    }
-
     @RequestMapping(method = RequestMethod.POST, value = "/requestRelationshipBreakup", produces = MediaType.APPLICATION_JSON_VALUE)
     public RelationshipBreakupRequest requestRelationshipBreakup(@RequestBody NewRelationshipBreakupRequest newBreakupRequest) {
         return relationshipService.requestRelationshipBreakup(newBreakupRequest);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/getActiveRelationshipBreakupRequest", produces = MediaType.APPLICATION_JSON_VALUE)
+    public RelationshipBreakupRequest getActiveRelationshipBreakupRequest(@RequestParam UUID relID) {
+        return Utils.returnOrException(relationshipService.getActiveRelationshipBreakup(relID));
     }
 
     @RequestMapping(method = RequestMethod.PATCH, value = "/setFinalRelationshipBreakupRequestStatus", produces = MediaType.APPLICATION_JSON_VALUE)

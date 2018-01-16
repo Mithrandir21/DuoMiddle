@@ -1,9 +1,7 @@
 package com.duopoints.service;
 
-import com.duopoints.db.Routines;
-import com.duopoints.db.tables.pojos.Userdata;
 import com.duopoints.db.tables.pojos.UserAddress;
-import com.duopoints.db.tables.pojos.UserLevel;
+import com.duopoints.db.tables.pojos.Userdata;
 import com.duopoints.db.tables.records.UserAddressRecord;
 import com.duopoints.db.tables.records.UserdataRecord;
 import com.duopoints.errorhandling.NoMatchingRowException;
@@ -17,7 +15,6 @@ import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 import static com.duopoints.db.tables.UserAddress.USER_ADDRESS;
-import static com.duopoints.db.tables.UserLevel.USER_LEVEL;
 import static com.duopoints.db.tables.Userdata.USERDATA;
 import static org.jooq.impl.DSL.row;
 
@@ -53,20 +50,11 @@ public class UserService {
         return duo.selectFrom(USERDATA).where(USERDATA.USER_UUID.eq(userID)).fetchOneInto(Userdata.class);
     }
 
-    public int getAllUserPoint(@NotNull UUID userID) {
-        return Routines.alluserpoints(duo.configuration(), userID);
-    }
-
-
     /************
      * USER ADR
      ************/
 
-    public UserAddress getUserAddress(@NotNull UUID adrID) {
-        return duo.selectFrom(USER_ADDRESS).where(USER_ADDRESS.ADDRESS_UUID.eq(adrID)).fetchOneInto(UserAddress.class);
-    }
-
-    public UserAddress updateUserAddress(@NotNull UserAddress newUserAddress) {
+    public boolean updateUserAddress(@NotNull UserAddress newUserAddress) {
         UserAddressRecord userAddressRecord = duo.update(USER_ADDRESS)
                 .set(row(USER_ADDRESS.ADR_CITY, USER_ADDRESS.ADR_COUNTRY, USER_ADDRESS.ADR_REGION),
                         row(newUserAddress.getAdrCity(), newUserAddress.getAdrCountry(), newUserAddress.getAdrRegion()))
@@ -75,18 +63,9 @@ public class UserService {
                 .fetchOne();
 
         if (userAddressRecord != null) {
-            return userAddressRecord.into(UserAddress.class);
+            return true;
         } else {
             throw new NoMatchingRowException("No UserAddress found with ID='" + newUserAddress.getAddressUuid() + "'");
         }
-    }
-
-
-    /**************
-     * USER LEVEL
-     **************/
-
-    public UserLevel getUserLevel(@NotNull UUID userLevelID) {
-        return duo.selectFrom(USER_LEVEL).where(USER_LEVEL.USER_LEVEL_UUID.eq(userLevelID)).fetchOneInto(UserLevel.class);
     }
 }

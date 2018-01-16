@@ -6,12 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class UserReg {
 
-    @JsonProperty(RequestParameters.USER_REG_user_country)
-    public String country;
-
-    @JsonProperty(RequestParameters.USER_REG_user_city)
-    public String city;
-
     @JsonProperty(RequestParameters.USER_REG_user_auth_provider)
     public String auth_provider;
 
@@ -36,20 +30,16 @@ public class UserReg {
     @JsonProperty(RequestParameters.USER_REG_user_age)
     public short age;
 
+    @JsonProperty(RequestParameters.USER_REG_user_country)
+    public String country;
+
+    @JsonProperty(RequestParameters.USER_REG_user_city)
+    public String city;
+
 
     /************
      * GETTERS
      ************/
-
-    @JsonProperty(RequestParameters.USER_REG_user_country)
-    public String getCountry() {
-        return country;
-    }
-
-    @JsonProperty(RequestParameters.USER_REG_user_city)
-    public String getCity() {
-        return city;
-    }
 
     @JsonProperty(RequestParameters.USER_REG_user_auth_provider)
     public String getAuth_provider() {
@@ -91,20 +81,20 @@ public class UserReg {
         return age;
     }
 
+    @JsonProperty(RequestParameters.USER_REG_user_country)
+    public String getCountry() {
+        return country;
+    }
+
+    @JsonProperty(RequestParameters.USER_REG_user_city)
+    public String getCity() {
+        return city;
+    }
+
 
     /************
      * SETTERS
      ************/
-
-    @JsonProperty(RequestParameters.USER_REG_user_country)
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    @JsonProperty(RequestParameters.USER_REG_user_city)
-    public void setCity(String city) {
-        this.city = city;
-    }
 
     @JsonProperty(RequestParameters.USER_REG_user_auth_provider)
     public void setAuth_provider(String auth_provider) {
@@ -144,5 +134,15 @@ public class UserReg {
     @JsonProperty(RequestParameters.USER_REG_user_age)
     public void setAge(short age) {
         this.age = age;
+    }
+
+    @JsonProperty(RequestParameters.USER_REG_user_country)
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    @JsonProperty(RequestParameters.USER_REG_user_city)
+    public void setCity(String city) {
+        this.city = city;
     }
 }
