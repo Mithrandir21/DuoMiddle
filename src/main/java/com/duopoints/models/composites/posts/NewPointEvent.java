@@ -23,8 +23,8 @@ public class NewPointEvent extends PointEvent {
         this.points = points;
     }
 
-    public NewPointEvent(UUID pointEventUuid, UUID pointGiverUserUuid, UUID relationshipUuid, Short pointEventEmotionNumber, String pointEventType, String pointEventStatus, String pointEventComment, Timestamp createdUtc, Timestamp lastModifiedUtc, List<Point> points) {
-        super(pointEventUuid, pointGiverUserUuid, relationshipUuid, pointEventEmotionNumber, pointEventType, pointEventStatus, pointEventComment, createdUtc, lastModifiedUtc);
+    public NewPointEvent(UUID pointEventUuid, UUID pointGiverUserUuid, UUID relationshipUuid, Short pointEventEmotionNumber, String pointEventTitle, String pointEventSubtitle, String pointEventType, String pointEventStatus, String pointEventComment, Short pointEventLikes, Timestamp createdUtc, Timestamp lastModifiedUtc, List<Point> points) {
+        super(pointEventUuid, pointGiverUserUuid, relationshipUuid, pointEventEmotionNumber, pointEventTitle, pointEventSubtitle, pointEventType, pointEventStatus, pointEventComment, pointEventLikes, createdUtc, lastModifiedUtc);
         this.points = points;
     }
 

@@ -140,7 +140,8 @@
                                 user_signup_function
                                 | given_points_procedure
                                 | if_modified_func
-                                | update_modified_column</excludes>
+                                | update_modified_column
+                                | prevent_update</excludes>
                             <dateAsTimestamp>true</dateAsTimestamp>
                             <inputSchema>content</inputSchema>
 

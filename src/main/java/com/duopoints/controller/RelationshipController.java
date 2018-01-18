@@ -36,7 +36,6 @@ public class RelationshipController {
     }
 
 
-
     /*************************
      * RELATIONSHIP REQUESTS
      *************************/

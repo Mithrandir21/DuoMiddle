@@ -48,6 +48,7 @@ public class UserService {
 
     public Userdata getUser(@NotNull UUID userID) {
         return duo.selectFrom(USERDATA).where(USERDATA.USER_UUID.eq(userID)).fetchOneInto(Userdata.class);
+
     }
 
     /************
