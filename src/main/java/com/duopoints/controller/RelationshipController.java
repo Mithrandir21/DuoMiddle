@@ -1,9 +1,10 @@
 package com.duopoints.controller;
 
 import com.duopoints.Utils;
-import com.duopoints.db.tables.pojos.Relationship;
-import com.duopoints.db.tables.pojos.RelationshipBreakupRequest;
-import com.duopoints.db.tables.pojos.RelationshipRequest;
+import com.duopoints.models.FullRelationshipData;
+import com.duopoints.models.composites.gets.CompositeRelationship;
+import com.duopoints.models.composites.gets.CompositeRelationshipBreakupRequest;
+import com.duopoints.models.composites.gets.CompositeRelationshipRequest;
 import com.duopoints.models.posts.NewRelationshipBreakupRequest;
 import com.duopoints.models.posts.NewRelationshipRequest;
 import com.duopoints.service.RelationshipService;
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -25,33 +25,32 @@ public class RelationshipController {
      * RELATIONSHIP
      *********************/
 
-    @RequestMapping(method = RequestMethod.GET, value = "/getRelationship", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Relationship getRelationship(@RequestParam UUID relID) {
-        return Utils.returnOrException(relationshipService.getRelationship(relID));
+    @RequestMapping(method = RequestMethod.GET, value = "/getCompositeRelationship", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CompositeRelationship getCompositeRelationship(@RequestParam UUID relID) {
+        return Utils.returnOrException(relationshipService.getCompositeRelationship(relID));
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/getActiveUserRelationship", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Relationship getActiveUserRelationship(@RequestParam UUID userID) {
-        return Utils.returnOrException(relationshipService.getActiveUserRelationship(userID));
+    @RequestMapping(method = RequestMethod.GET, value = "/getUserActiveCompositeRelationship", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CompositeRelationship getUserActiveCompositeRelationship(@RequestParam UUID userID) {
+        return Utils.returnOrException(relationshipService.getActiveUserCompositeRelationship(userID));
     }
 
-
+    @RequestMapping(method = RequestMethod.GET, value = "/getFullRelationshipData", produces = MediaType.APPLICATION_JSON_VALUE)
+    public FullRelationshipData getFullRelationshipData(@RequestParam UUID relID) {
+        return Utils.returnOrException(relationshipService.getFullRelationshipData(relID));
+    }
+    
     /*************************
      * RELATIONSHIP REQUESTS
      *************************/
 
-    @RequestMapping(method = RequestMethod.POST, value = "/createRelationshipRequest", produces = MediaType.APPLICATION_JSON_VALUE)
-    public RelationshipRequest createRelationshipRequest(@RequestBody NewRelationshipRequest newRequest) {
+    @RequestMapping(method = RequestMethod.POST, value = "/createCompositeRelationshipRequest", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CompositeRelationshipRequest createCompositeRelationshipRequest(@RequestBody NewRelationshipRequest newRequest) {
         return relationshipService.createRelationshipRequest(newRequest);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/getRelationshipRequestsSentByUser", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<RelationshipRequest> getRelationshipRequestsSentByUser(@RequestParam UUID userID) {
-        return relationshipService.getRelationshipRequestsSentByUser(userID);
-    }
-
-    @RequestMapping(method = RequestMethod.PATCH, value = "/setFinalRelationshipRequestStatus", produces = MediaType.APPLICATION_JSON_VALUE)
-    public RelationshipRequest setFinalRelationshipRequestStatus(@RequestParam UUID requestID, @RequestParam String finalStatus) {
+    @RequestMapping(method = RequestMethod.PATCH, value = "/setFinalCompositeRelationshipRequestStatus", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CompositeRelationshipRequest setFinalCompositeRelationshipRequestStatus(@RequestParam UUID requestID, @RequestParam String finalStatus) {
         return relationshipService.setFinalRelationshipRequestStatus(requestID, finalStatus);
     }
 
@@ -60,18 +59,18 @@ public class RelationshipController {
      * RELATIONSHIP BREAKUP
      *************************/
 
-    @RequestMapping(method = RequestMethod.POST, value = "/requestRelationshipBreakup", produces = MediaType.APPLICATION_JSON_VALUE)
-    public RelationshipBreakupRequest requestRelationshipBreakup(@RequestBody NewRelationshipBreakupRequest newBreakupRequest) {
-        return relationshipService.requestRelationshipBreakup(newBreakupRequest);
+    @RequestMapping(method = RequestMethod.POST, value = "/requestCompositeRelationshipBreakup", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CompositeRelationshipBreakupRequest requestCompositeRelationshipBreakup(@RequestBody NewRelationshipBreakupRequest newBreakupRequest) {
+        return relationshipService.requestCompositeRelationshipBreakup(newBreakupRequest);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/getActiveRelationshipBreakupRequest", produces = MediaType.APPLICATION_JSON_VALUE)
-    public RelationshipBreakupRequest getActiveRelationshipBreakupRequest(@RequestParam UUID relID) {
-        return Utils.returnOrException(relationshipService.getActiveRelationshipBreakup(relID));
+    @RequestMapping(method = RequestMethod.GET, value = "/getActiveCompositeRelationshipBreakupRequest", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CompositeRelationshipBreakupRequest getActiveCompositeRelationshipBreakupRequest(@RequestParam UUID relID) {
+        return Utils.returnOrException(relationshipService.getActiveCompositeRelationshipBreakup(relID));
     }
 
-    @RequestMapping(method = RequestMethod.PATCH, value = "/setFinalRelationshipBreakupRequestStatus", produces = MediaType.APPLICATION_JSON_VALUE)
-    public RelationshipBreakupRequest setFinalRelationshipBreakupRequestStatus(@RequestParam UUID requestID, @RequestParam String finalStatus) {
+    @RequestMapping(method = RequestMethod.PATCH, value = "/setFinalCompositeRelationshipBreakupRequestStatus", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CompositeRelationshipBreakupRequest setFinalCompositeRelationshipBreakupRequestStatus(@RequestParam UUID requestID, @RequestParam String finalStatus) {
         return relationshipService.setFinalRelationshipBreakupRequestStatus(requestID, finalStatus);
     }
 }

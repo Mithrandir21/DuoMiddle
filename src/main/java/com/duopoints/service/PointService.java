@@ -2,10 +2,12 @@ package com.duopoints.service;
 
 import com.duopoints.db.tables.pojos.Point;
 import com.duopoints.db.tables.pojos.PointEvent;
-import com.duopoints.db.tables.pojos.PointEventComment;
 import com.duopoints.db.tables.pojos.Pointdata;
+import com.duopoints.db.tables.pojos.Pointeventcommentdata;
 import com.duopoints.db.tables.records.PointRecord;
-import com.duopoints.models.composites.gets.PointEventData;
+import com.duopoints.errorhandling.NoMatchingRowException;
+import com.duopoints.models.composites.gets.CompositePointEvent;
+import com.duopoints.models.composites.gets.CompositeRelationship;
 import com.duopoints.models.composites.posts.NewPointEvent;
 import org.jooq.impl.DefaultDSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,21 +15,26 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static com.duopoints.db.tables.PointEvent.POINT_EVENT;
-import static com.duopoints.db.tables.PointEventComment.POINT_EVENT_COMMENT;
 import static com.duopoints.db.tables.Pointdata.POINTDATA;
+import static com.duopoints.db.tables.Pointeventcommentdata.POINTEVENTCOMMENTDATA;
 
+@SuppressWarnings("WeakerAccess")
 @Service
 public class PointService {
 
     @Autowired
     @Qualifier("dsl")
     private DefaultDSLContext duo;
+
+    @Autowired
+    private RelationshipService relationshipService;
 
 
     @Transactional
@@ -64,16 +71,93 @@ public class PointService {
         return true;
     }
 
-    public PointEventData getPointEvent(@NotNull UUID pointEventID) {
-        // First we get the PointEvent with the given ID
-        PointEvent pointevent = duo.selectFrom(POINT_EVENT).where(POINT_EVENT.POINT_EVENT_UUID.eq(pointEventID)).fetchOneInto(PointEvent.class);
+    @Nullable
+    public PointEvent getPointEvent(@NotNull UUID pointEventID) {
+        return duo.selectFrom(POINT_EVENT).where(POINT_EVENT.POINT_EVENT_UUID.eq(pointEventID)).fetchOneInto(PointEvent.class);
+    }
 
-        // Now we get the list of Pointsdata for the specific PointEvent
-        List<Pointdata> pointsdata = duo.selectFrom(POINTDATA).where(POINTDATA.POINT_EVENT_UUID.eq(pointEventID)).fetchInto(Pointdata.class);
+    @NotNull
+    public List<PointEvent> getPointEvents(@NotNull UUID relID) {
+        return duo.selectFrom(POINT_EVENT).where(POINT_EVENT.RELATIONSHIP_UUID.eq(relID)).fetchInto(PointEvent.class);
+    }
 
-        // Not we get the list of PointEventComments
-        List<PointEventComment> pointEventComments = duo.selectFrom(POINT_EVENT_COMMENT).where(POINT_EVENT_COMMENT.POINT_EVENT_UUID.eq(pointEventID)).fetchInto(PointEventComment.class);
 
-        return new PointEventData(pointevent, pointsdata, pointEventComments);
+    /*****************************
+     * CompositePointEvent
+     *****************************/
+
+    @NotNull
+    public CompositePointEvent getCompositePointEvent(@NotNull UUID pointEventID) {
+        PointEvent pointEvent = getPointEvent(pointEventID);
+
+        if (pointEvent != null) {
+            return getCompositePointEvent(pointEvent);
+        } else {
+            throw new NoMatchingRowException("No PointEvent found for pointEventID='" + pointEventID + "'");
+        }
+    }
+
+    public CompositePointEvent getCompositePointEvent(@NotNull PointEvent pointevent) {
+        return getCompositePointEvent(pointevent, getPointsData(pointevent.getPointEventUuid()));
+    }
+
+    public CompositePointEvent getCompositePointEvent(@NotNull PointEvent pointevent, @NotNull CompositeRelationship compositeRelationship) {
+        return getCompositePointEvent(pointevent, getPointsData(pointevent.getPointEventUuid()), getPointEventCommentdata(pointevent.getPointEventUuid()), compositeRelationship);
+    }
+
+    public CompositePointEvent getCompositePointEvent(@NotNull PointEvent pointevent, @NotNull List<Pointdata> pointsdata) {
+        return getCompositePointEvent(pointevent, pointsdata, getPointEventCommentdata(pointevent.getPointEventUuid()));
+    }
+
+    @NotNull
+    public CompositePointEvent getCompositePointEvent(@NotNull PointEvent pointevent, @NotNull List<Pointdata> pointsdata, @NotNull List<Pointeventcommentdata> pointEventComments) {
+        CompositeRelationship compositeRelationship = relationshipService.getCompositeRelationship(pointevent.getRelationshipUuid());
+
+        if (compositeRelationship != null) {
+            return getCompositePointEvent(pointevent, pointsdata, pointEventComments, compositeRelationship);
+        } else {
+            throw new NoMatchingRowException("No CompositeRelationship found for relationshioID='" + pointevent.getRelationshipUuid() + "'");
+        }
+    }
+
+    public CompositePointEvent getCompositePointEvent(@NotNull PointEvent pointevent, @NotNull List<Pointdata> pointsdata, @NotNull List<Pointeventcommentdata> pointEventComments, @NotNull CompositeRelationship compositeRelationship) {
+        return new CompositePointEvent(pointevent, compositeRelationship, pointsdata, pointEventComments);
+    }
+
+    public List<CompositePointEvent> getCompositePointEvents(@NotNull UUID relID) {
+        return getCompositePointEvents(relationshipService.getCompositeRelationship(relID));
+    }
+
+    public List<CompositePointEvent> getCompositePointEvents(@NotNull CompositeRelationship compositeRelationship) {
+        List<CompositePointEvent> compositePointEvents = new ArrayList<>();
+
+        // First get all the PointEvents of a Relationship
+        List<PointEvent> relationshipPointEvents = getPointEvents(compositeRelationship.getRelationshipUuid());
+
+        for (PointEvent singleEvent : relationshipPointEvents) {
+            compositePointEvents.add(getCompositePointEvent(singleEvent, compositeRelationship));
+        }
+
+        return compositePointEvents;
+    }
+
+
+    /*******************
+     * POINTDATA
+     *******************/
+
+    @NotNull
+    public List<Pointdata> getPointsData(@NotNull UUID pointEventID) {
+        return duo.selectFrom(POINTDATA).where(POINTDATA.POINT_EVENT_UUID.eq(pointEventID)).fetchInto(Pointdata.class);
+    }
+
+
+    /******************************
+     * POINTEVENTCOMMENTDATA
+     ******************************/
+
+    @NotNull
+    public List<Pointeventcommentdata> getPointEventCommentdata(@NotNull UUID pointEventID) {
+        return duo.selectFrom(POINTEVENTCOMMENTDATA).where(POINTEVENTCOMMENTDATA.POINT_EVENT_UUID.eq(pointEventID)).fetchInto(Pointeventcommentdata.class);
     }
 }

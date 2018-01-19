@@ -1,6 +1,5 @@
 package com.duopoints.service;
 
-import com.duopoints.db.Routines;
 import com.duopoints.db.tables.pojos.Relationship;
 import com.duopoints.db.tables.pojos.RelationshipBreakupRequest;
 import com.duopoints.db.tables.pojos.RelationshipRequest;
@@ -10,7 +9,11 @@ import com.duopoints.db.tables.records.RelationshipRecord;
 import com.duopoints.db.tables.records.RelationshipRequestRecord;
 import com.duopoints.errorhandling.ConflictException;
 import com.duopoints.errorhandling.NoMatchingRowException;
+import com.duopoints.models.FullRelationshipData;
 import com.duopoints.models.RequestParameters;
+import com.duopoints.models.composites.gets.CompositeRelationship;
+import com.duopoints.models.composites.gets.CompositeRelationshipBreakupRequest;
+import com.duopoints.models.composites.gets.CompositeRelationshipRequest;
 import com.duopoints.models.posts.NewRelationshipBreakupRequest;
 import com.duopoints.models.posts.NewRelationshipRequest;
 import org.jooq.Condition;
@@ -20,9 +23,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 import static com.duopoints.db.tables.Relationship.RELATIONSHIP;
@@ -30,6 +33,7 @@ import static com.duopoints.db.tables.RelationshipAchievementList.RELATIONSHIP_A
 import static com.duopoints.db.tables.RelationshipBreakupRequest.RELATIONSHIP_BREAKUP_REQUEST;
 import static com.duopoints.db.tables.RelationshipRequest.RELATIONSHIP_REQUEST;
 
+@SuppressWarnings("WeakerAccess")
 @Service
 public class RelationshipService {
 
@@ -37,14 +41,22 @@ public class RelationshipService {
     @Qualifier("dsl")
     private DefaultDSLContext duo;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private PointService pointService;
+
     /*********************
      * RELATIONSHIP
      *********************/
 
+    @Nullable
     public Relationship getRelationship(@NotNull UUID relID) {
         return duo.selectFrom(RELATIONSHIP).where(RELATIONSHIP.RELATIONSHIP_UUID.eq(relID)).fetchOneInto(Relationship.class);
     }
 
+    @Nullable
     public Relationship getActiveUserRelationship(@NotNull UUID userID) {
         return duo.selectFrom(RELATIONSHIP)
                 .where(RELATIONSHIP.USER_UUID_1.eq(userID))
@@ -53,11 +65,34 @@ public class RelationshipService {
                 .fetchOneInto(Relationship.class);
     }
 
-    public UUID getRelationshipPartner(@NotNull UUID userID, @NotNull UUID relID) {
-        return Routines.getrelationshipPartner(duo.configuration(), userID, relID);
+    @NotNull
+    public CompositeRelationship getCompositeRelationship(@NotNull UUID relID) {
+        Relationship relationship = getRelationship(relID);
+
+        if (relationship != null) {
+            return getCompositeRelationship(relationship);
+        } else {
+            throw new NoMatchingRowException("No Relationship found matching relID='" + relID + "'");
+        }
     }
 
-    private Relationship createRelationship(@NotNull UUID userOne, @NotNull UUID userTwo, @NotNull String relStatus, boolean isSecret) {
+    public CompositeRelationship getCompositeRelationship(@NotNull Relationship relationship) {
+        // Complete the composite object with Users needed
+        return new CompositeRelationship(relationship, userService.getUser(relationship.getUserUuid_1()), userService.getUser(relationship.getUserUuid_2()));
+    }
+
+    @NotNull
+    public CompositeRelationship getActiveUserCompositeRelationship(@NotNull UUID userID) {
+        Relationship activeUserRelationship = getActiveUserRelationship(userID);
+
+        if (activeUserRelationship != null) {
+            return getCompositeRelationship(activeUserRelationship);
+        } else {
+            throw new NoMatchingRowException("No Active Relationship found for userID='" + userID + "'");
+        }
+    }
+
+    private CompositeRelationship createRelationship(@NotNull UUID userOne, @NotNull UUID userTwo, @NotNull String relStatus, boolean isSecret) {
         // First check if either user is in Active Relationships
         if (getActiveUserRelationship(userOne) != null) {
             throw new ConflictException("User(" + userOne + ") already in Active Relationship");
@@ -71,15 +106,17 @@ public class RelationshipService {
         RelationshipAchievementListRecord relationshipAchievementListRecord = duo.insertInto(RELATIONSHIP_ACHIEVEMENT_LIST).defaultValues().returning().fetchOne();
 
         // Create Relationship
-        return duo.insertInto(RELATIONSHIP)
+        Relationship relationship = duo.insertInto(RELATIONSHIP)
                 .columns(RELATIONSHIP.USER_UUID_1, RELATIONSHIP.USER_UUID_2, RELATIONSHIP.STATUS, RELATIONSHIP.IS_SECRET, RELATIONSHIP.RELATIONSHIP_ACHIEVEMENT_LIST_UUID)
                 .values(userOne, userTwo, relStatus, isSecret, relationshipAchievementListRecord.getRelationshipAchievementListUuid())
                 .returning()
                 .fetchOne()
                 .into(Relationship.class);
+
+        return getCompositeRelationship(relationship);
     }
 
-    private Relationship setRelationshipStatus(@NotNull UUID relID, @NotNull String status) {
+    private CompositeRelationship setRelationshipStatus(@NotNull UUID relID, @NotNull String status) {
         RelationshipRecord relationshipRecord = duo.update(RELATIONSHIP)
                 .set(RELATIONSHIP.STATUS, status)
                 .where(RELATIONSHIP.RELATIONSHIP_UUID.eq(relID))
@@ -87,7 +124,7 @@ public class RelationshipService {
                 .fetchOne();
 
         if (relationshipRecord != null) {
-            return relationshipRecord.into(Relationship.class);
+            return getCompositeRelationship(relationshipRecord.getRelationshipUuid());
         } else {
             throw new NoMatchingRowException("No Relationship found matching relID='" + relID + "'");
         }
@@ -98,7 +135,27 @@ public class RelationshipService {
      * RELATIONSHIP REQUESTS
      *************************/
 
-    public RelationshipRequest createRelationshipRequest(@NotNull NewRelationshipRequest request) {
+    @Nullable
+    public RelationshipRequest getRelationshipRequest(@NotNull UUID requestID) {
+        return duo.selectFrom(RELATIONSHIP_REQUEST).where(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_UUID.eq(requestID)).fetchOneInto(RelationshipRequest.class);
+    }
+
+    @NotNull
+    public CompositeRelationshipRequest getCompositeRelationshipRequest(@NotNull UUID requestUUID) {
+        RelationshipRequest relationshipRequest = getRelationshipRequest(requestUUID);
+
+        if (relationshipRequest != null) {
+            return getCompositeRelationshipRequest(relationshipRequest);
+        } else {
+            throw new NoMatchingRowException("No RelationshipRequest found for requestID='" + requestUUID + "'");
+        }
+    }
+
+    public CompositeRelationshipRequest getCompositeRelationshipRequest(@NotNull RelationshipRequest relationshipRequest) {
+        return new CompositeRelationshipRequest(relationshipRequest, userService.getUser(relationshipRequest.getRelationshipRequestSenderUserUuid()), userService.getUser(relationshipRequest.getRelationshipRequestRecepientUserUuid()));
+    }
+
+    public CompositeRelationshipRequest createRelationshipRequest(@NotNull NewRelationshipRequest request) {
         // First check if either user is in Active Relationships
         if (getActiveUserRelationship(request.senderUserID) != null) {
             throw new ConflictException("User(" + request.senderUserID + ") already in Active Relationship");
@@ -118,7 +175,7 @@ public class RelationshipService {
         }
 
         // At this point no request exists between the sender and recipient that is not in accepted or rejected state
-        return duo.insertInto(RELATIONSHIP_REQUEST)
+        RelationshipRequest relationshipRequest = duo.insertInto(RELATIONSHIP_REQUEST)
                 .columns(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_SENDER_USER_UUID, RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_RECEPIENT_USER_NAME,
                         RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_RECEPIENT_USER_EMAIL, RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_RECEPIENT_USER_UUID,
                         RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_COMMENT, RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_DESIRED_REL_STATUS, RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_REL_IS_SECRET,
@@ -129,10 +186,8 @@ public class RelationshipService {
                 .returning()
                 .fetchOne()
                 .into(RelationshipRequest.class);
-    }
 
-    public List<RelationshipRequest> getRelationshipRequestsSentByUser(@NotNull UUID userID) {
-        return duo.selectFrom(RELATIONSHIP_REQUEST).where(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_SENDER_USER_UUID.eq(userID)).fetchInto(RelationshipRequest.class);
+        return getCompositeRelationshipRequest(relationshipRequest);
     }
 
     /**
@@ -140,10 +195,9 @@ public class RelationshipService {
      * status of Requested.
      */
     @Transactional
-    public RelationshipRequest setFinalRelationshipRequestStatus(@NotNull UUID requestID, @NotNull String status) {
+    public CompositeRelationshipRequest setFinalRelationshipRequestStatus(@NotNull UUID requestID, @NotNull String status) {
         // First we retrieve the Request
-        RelationshipRequest relationshipRequest = duo.selectFrom(RELATIONSHIP_REQUEST)
-                .where(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_UUID.eq(requestID)).fetchOneInto(RelationshipRequest.class);
+        RelationshipRequest relationshipRequest = getRelationshipRequest(requestID);
 
         if (relationshipRequest == null) {
             throw new NoMatchingRowException("No RelationshipRequest found matching requestID='" + requestID + "'");
@@ -174,7 +228,7 @@ public class RelationshipService {
                 .fetchOne();
 
         if (relationshipRequestRecord != null) {
-            return relationshipRequestRecord.into(RelationshipRequest.class);
+            return getCompositeRelationshipRequest(relationshipRequestRecord.getRelationshipRequestUuid());
         } else {
             throw new NoMatchingRowException("No RelationshipRequest found matching requestID='" + requestID + "' having status " + RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_requested);
         }
@@ -185,6 +239,7 @@ public class RelationshipService {
      * RELATIONSHIP BREAKUP
      ************************/
 
+    @Nullable
     public RelationshipBreakupRequest getActiveRelationshipBreakup(@NotNull UUID relationshipID) {
         return duo.selectFrom(RELATIONSHIP_BREAKUP_REQUEST)
                 .where(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_UUID.eq(relationshipID))
@@ -192,25 +247,41 @@ public class RelationshipService {
                 .fetchOneInto(RelationshipBreakupRequest.class); // There should never be more than a single active breakup request
     }
 
-    public RelationshipBreakupRequest requestRelationshipBreakup(@NotNull NewRelationshipBreakupRequest newBreakupRequest) {
+    @NotNull
+    public CompositeRelationshipBreakupRequest getActiveCompositeRelationshipBreakup(@NotNull UUID relationshipID) {
+        RelationshipBreakupRequest activeRelationshipBreakup = getActiveRelationshipBreakup(relationshipID);
+
+        if (activeRelationshipBreakup != null) {
+            return getActiveCompositeRelationshipBreakup(activeRelationshipBreakup);
+        } else {
+            throw new NoMatchingRowException("No RelationshipBreakupRequest found for relationshipID='" + relationshipID + "'");
+        }
+    }
+
+    public CompositeRelationshipBreakupRequest getActiveCompositeRelationshipBreakup(@NotNull RelationshipBreakupRequest req) {
+        return new CompositeRelationshipBreakupRequest(req, getCompositeRelationship(req.getRelationshipUuid()), userService.getUser(req.getUserUuid()));
+    }
+
+    public CompositeRelationshipBreakupRequest requestCompositeRelationshipBreakup(@NotNull NewRelationshipBreakupRequest newBreakupRequest) {
         // First check if any other Breakup requests exist for the RelationshipID with status as PROCESSING
-        if (getActiveRelationshipBreakup(newBreakupRequest.relID) != null) {
+        if (getActiveCompositeRelationshipBreakup(newBreakupRequest.relID) != null) {
             throw new ConflictException("Relationship already has a requested breakup");
         }
 
-        return duo.insertInto(RELATIONSHIP_BREAKUP_REQUEST)
+        RelationshipBreakupRequest request = duo.insertInto(RELATIONSHIP_BREAKUP_REQUEST)
                 .columns(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_UUID, RELATIONSHIP_BREAKUP_REQUEST.USER_UUID, RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_COMMENT, RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_STATUS)
                 .values(newBreakupRequest.relID, newBreakupRequest.requestingUserID, newBreakupRequest.comment, RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_status_processing)
                 .returning()
                 .fetchOne()
                 .into(RelationshipBreakupRequest.class);
+
+        return getActiveCompositeRelationshipBreakup(request);
     }
 
     @Transactional
-    public RelationshipBreakupRequest setFinalRelationshipBreakupRequestStatus(@NotNull UUID requestID, @NotNull String status) {
+    public CompositeRelationshipBreakupRequest setFinalRelationshipBreakupRequestStatus(@NotNull UUID requestID, @NotNull String status) {
         // First we retrieve the Request
-        RelationshipBreakupRequest relbreakupRequest = duo.selectFrom(RELATIONSHIP_BREAKUP_REQUEST)
-                .where(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_UUID.eq(requestID)).fetchOneInto(RelationshipBreakupRequest.class);
+        RelationshipBreakupRequest relbreakupRequest = duo.selectFrom(RELATIONSHIP_BREAKUP_REQUEST).where(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_UUID.eq(requestID)).fetchOneInto(RelationshipBreakupRequest.class);
 
         if (relbreakupRequest == null) {
             throw new NoMatchingRowException("No RelbreakupRequest found matching requestID='" + requestID + "'");
@@ -237,9 +308,25 @@ public class RelationshipService {
                 .fetchOne();
 
         if (relbreakupRequestRecord != null) {
-            return relbreakupRequestRecord.into(RelationshipBreakupRequest.class);
+            return getActiveCompositeRelationshipBreakup(relbreakupRequestRecord.getRelationshipUuid());
         } else {
             throw new NoMatchingRowException("No RelationshipBreakupRequest found matching requestID='" + requestID + "' having status " + RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_status_processing);
+        }
+    }
+
+
+    /*************************
+     * FULLRELATIONSHIPDATA - Custom
+     *************************/
+
+    @NotNull
+    public FullRelationshipData getFullRelationshipData(@NotNull UUID relID) {
+        CompositeRelationship compositeRelationship = getCompositeRelationship(relID);
+
+        if (compositeRelationship != null) {
+            return new FullRelationshipData(compositeRelationship, compositeRelationship.getUserOne(), compositeRelationship.getUserTwo(), pointService.getCompositePointEvents(compositeRelationship));
+        } else {
+            throw new NoMatchingRowException("No CompositeRelationship found for relID='" + relID + "'");
         }
     }
 }

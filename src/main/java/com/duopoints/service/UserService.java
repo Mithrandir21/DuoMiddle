@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
@@ -46,9 +47,9 @@ public class UserService {
         return getUser(userdataRecord.getUserUuid());
     }
 
+    @Nullable
     public Userdata getUser(@NotNull UUID userID) {
         return duo.selectFrom(USERDATA).where(USERDATA.USER_UUID.eq(userID)).fetchOneInto(Userdata.class);
-
     }
 
     /************

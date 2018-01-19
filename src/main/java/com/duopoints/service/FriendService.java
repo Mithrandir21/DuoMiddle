@@ -7,6 +7,8 @@ import com.duopoints.db.tables.records.FriendRequestRecord;
 import com.duopoints.errorhandling.ConflictException;
 import com.duopoints.errorhandling.NoMatchingRowException;
 import com.duopoints.models.RequestParameters;
+import com.duopoints.models.composites.gets.CompositeFriendRequest;
+import com.duopoints.models.composites.gets.CompositeFriendship;
 import com.duopoints.models.posts.NewFriendRequest;
 import org.jooq.Condition;
 import org.jooq.impl.DefaultDSLContext;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
@@ -29,16 +32,31 @@ public class FriendService {
     @Qualifier("dsl")
     private DefaultDSLContext duo;
 
+    @Autowired
+    private UserService userService;
+
 
     /*****************
      * FRIEND REQUEST
      *****************/
 
+    @Nullable
     public FriendRequest getFriendRequest(@NotNull UUID friendRequestID) {
         return duo.selectFrom(FRIEND_REQUEST).where(FRIEND_REQUEST.FRIEND_REQUEST_UUID.eq(friendRequestID)).fetchOneInto(FriendRequest.class);
     }
 
-    public FriendRequest createFriendRequest(@NotNull NewFriendRequest newFriendRequest) {
+    @NotNull
+    public CompositeFriendRequest getCompositeFriendRequest(@NotNull UUID friendRequestID) {
+        FriendRequest req = getFriendRequest(friendRequestID);
+
+        if (req != null) {
+            return new CompositeFriendRequest(req, userService.getUser(req.getFriendRequestSenderUserUuid()), userService.getUser(req.getFriendRequestRecipientUserUuid()));
+        } else {
+            throw new NoMatchingRowException("No FriendRequest found for friendRequestID='" + friendRequestID + "'");
+        }
+    }
+
+    public CompositeFriendRequest createCompositeFriendRequest(@NotNull NewFriendRequest newFriendRequest) {
         // First check if there already exists a friend request for the given Sender and Recipient that is not WAITING_FOR_RECIPIENT
         FriendRequest friendrequest = duo.selectFrom(FRIEND_REQUEST)
                 .where(FRIEND_REQUEST.FRIEND_REQUEST_SENDER_USER_UUID.eq(newFriendRequest.requestSenderID),
@@ -51,7 +69,7 @@ public class FriendService {
             throw new ConflictException("A friend request already exists with the status:" + friendrequest.getFriendRequestStatus());
         }
 
-        return duo.insertInto(FRIEND_REQUEST)
+        FriendRequest friendRequest = duo.insertInto(FRIEND_REQUEST)
                 .columns(FRIEND_REQUEST.FRIEND_REQUEST_SENDER_USER_UUID, FRIEND_REQUEST.FRIEND_REQUEST_RECIPIENT_USER_UUID,
                         FRIEND_REQUEST.FRIEND_REQUEST_COMMENT, FRIEND_REQUEST.FRIEND_REQUEST_STATUS)
                 .values(newFriendRequest.requestSenderID, newFriendRequest.requestRecipientID, newFriendRequest.requestComment,
@@ -59,10 +77,12 @@ public class FriendService {
                 .returning()
                 .fetchOne()
                 .into(FriendRequest.class);
+
+        return new CompositeFriendRequest(friendRequest, userService.getUser(friendRequest.getFriendRequestSenderUserUuid()), userService.getUser(friendRequest.getFriendRequestRecipientUserUuid()));
     }
 
     @Transactional
-    public FriendRequest setFinalFriendRequestStatus(@NotNull UUID requestID, @NotNull String status) {
+    public CompositeFriendRequest setFinalCompositeFriendRequestStatus(@NotNull UUID requestID, @NotNull String status) {
         // First we retrieve the Request
         FriendRequest friendrequest = duo.selectFrom(FRIEND_REQUEST)
                 .where(FRIEND_REQUEST.FRIEND_REQUEST_UUID.eq(requestID)).fetchOneInto(FriendRequest.class);
@@ -91,7 +111,7 @@ public class FriendService {
                 .fetchOne();
 
         if (friendrequestRecord != null) {
-            return friendrequestRecord.into(FriendRequest.class);
+            return getCompositeFriendRequest(friendrequestRecord.getFriendRequestUuid());
         } else {
             throw new NoMatchingRowException("No FriendRequest found matching requestID='" + requestID + "' having status " + RequestParameters.FRIEND_REQUEST_friend_request_status_waiting_for_recipient);
         }
@@ -102,6 +122,7 @@ public class FriendService {
      * FRIENDSHIP
      *****************/
 
+    @Nullable
     public Friendship getActiveFriendship(@NotNull UUID userOne, @NotNull UUID userTwo) {
         Condition friends1 = FRIENDSHIP.USER_ONE_UUID.eq(userOne).and(FRIENDSHIP.USER_TWO_UUID.eq(userTwo));
         Condition friends2 = FRIENDSHIP.USER_ONE_UUID.eq(userTwo).and(FRIENDSHIP.USER_TWO_UUID.eq(userOne));
@@ -111,7 +132,18 @@ public class FriendService {
                 .fetchOneInto(Friendship.class);
     }
 
-    private Friendship createFriend(@NotNull UUID userOne, @NotNull UUID userTwo) {
+    @NotNull
+    public CompositeFriendship getActiveCompositeFriendship(@NotNull UUID userOne, @NotNull UUID userTwo) {
+        Friendship friendship = getActiveFriendship(userOne, userTwo);
+
+        if (friendship != null) {
+            return new CompositeFriendship(friendship, userService.getUser(friendship.getUserOneUuid()), userService.getUser(friendship.getUserTwoUuid()));
+        } else {
+            throw new NoMatchingRowException("No Friendship found for userOne='" + userOne + "' and userTwo='" + userTwo + "'");
+        }
+    }
+
+    private CompositeFriendship createFriend(@NotNull UUID userOne, @NotNull UUID userTwo) {
         // First check if users already friends
         if (getActiveFriendship(userOne, userTwo) != null) {
             throw new ConflictException("Friendship already exists between userOne('" + userOne + "') and userTwo('" + userTwo + "')");
@@ -122,11 +154,13 @@ public class FriendService {
         FriendRights rightsTwo = duo.insertInto(FRIEND_RIGHTS).defaultValues().returning().fetchOne().into(FriendRights.class);
 
 
-        return duo.insertInto(FRIENDSHIP)
+        Friendship friendship = duo.insertInto(FRIENDSHIP)
                 .columns(FRIENDSHIP.USER_ONE_UUID, FRIENDSHIP.USER_TWO_UUID, FRIENDSHIP.FRIEND_ONE_RIGHTS_UUID, FRIENDSHIP.FRIEND_TWO_RIGHTS_UUID, FRIENDSHIP.FRIENDSHIP_STATUS)
                 .values(userOne, userTwo, rightsOne.getFriendRightsUuid(), rightsTwo.getFriendRightsUuid(), RequestParameters.FRIEND_friendship_status_active)
                 .returning()
                 .fetchOne()
                 .into(Friendship.class);
+
+        return friendship == null ? null : new CompositeFriendship(friendship, userService.getUser(friendship.getUserOneUuid()), userService.getUser(friendship.getUserTwoUuid()));
     }
 }
