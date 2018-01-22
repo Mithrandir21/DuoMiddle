@@ -1,4 +1,4 @@
-package com.duopoints.models.composites.gets;
+package com.duopoints.models.composites;
 
 import com.duopoints.db.tables.pojos.RelationshipBreakupRequest;
 import com.duopoints.db.tables.pojos.Userdata;

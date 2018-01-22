@@ -1,16 +1,15 @@
-package com.duopoints.models.composites.gets;
+package com.duopoints.models.composites;
 
-import com.duopoints.db.tables.pojos.FriendRequest;
+import com.duopoints.db.tables.pojos.Relationship;
 import com.duopoints.db.tables.pojos.Userdata;
 
 import javax.validation.constraints.NotNull;
 
-public class CompositeFriendRequest extends FriendRequest {
-
+public class CompositeRelationship extends Relationship {
     private Userdata userOne;
     private Userdata userTwo;
 
-    public CompositeFriendRequest(@NotNull FriendRequest value, @NotNull Userdata userOne, @NotNull Userdata userTwo) {
+    public CompositeRelationship(@NotNull Relationship value, @NotNull Userdata userOne, @NotNull Userdata userTwo) {
         super(value);
         this.userOne = userOne;
         this.userTwo = userTwo;

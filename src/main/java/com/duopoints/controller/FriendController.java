@@ -1,8 +1,8 @@
 package com.duopoints.controller;
 
 import com.duopoints.Utils;
-import com.duopoints.models.composites.gets.CompositeFriendRequest;
-import com.duopoints.models.composites.gets.CompositeFriendship;
+import com.duopoints.models.composites.CompositeFriendRequest;
+import com.duopoints.models.composites.CompositeFriendship;
 import com.duopoints.models.posts.NewFriendRequest;
 import com.duopoints.service.FriendService;
 import org.springframework.beans.factory.annotation.Autowired;

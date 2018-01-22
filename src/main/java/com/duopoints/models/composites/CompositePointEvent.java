@@ -1,4 +1,4 @@
-package com.duopoints.models.composites.gets;
+package com.duopoints.models.composites;
 
 import com.duopoints.db.tables.pojos.PointEvent;
 import com.duopoints.db.tables.pojos.Pointdata;
@@ -12,12 +12,16 @@ public class CompositePointEvent extends PointEvent {
     private CompositeRelationship relationship;
     private List<Pointdata> pointdata;
     private List<Pointeventcommentdata> pointEventComments;
+    private int pointEventTotalPoints = 0;
 
     public CompositePointEvent(@NotNull PointEvent value, @NotNull CompositeRelationship relationship, @NotNull List<Pointdata> pointdata, @NotNull List<Pointeventcommentdata> pointEventComments) {
         super(value);
         this.relationship = relationship;
         this.pointdata = pointdata;
         this.pointEventComments = pointEventComments;
+        for (Pointdata point : pointdata) {
+            pointEventTotalPoints += point.getPointValue();
+        }
     }
 
     @NotNull
@@ -45,5 +49,14 @@ public class CompositePointEvent extends PointEvent {
 
     public void setPointEventComments(@NotNull List<Pointeventcommentdata> pointEventComments) {
         this.pointEventComments = pointEventComments;
+    }
+
+    public int getPointEventTotalPoints() {
+
+        return pointEventTotalPoints;
+    }
+
+    public void setPointEventTotalPoints(int pointEventTotalPoints) {
+        this.pointEventTotalPoints = pointEventTotalPoints;
     }
 }

@@ -1,5 +1,6 @@
 package com.duopoints.models;
 
+import com.duopoints.RequestParameters;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Timestamp {

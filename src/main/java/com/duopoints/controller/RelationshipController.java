@@ -2,9 +2,9 @@ package com.duopoints.controller;
 
 import com.duopoints.Utils;
 import com.duopoints.models.FullRelationshipData;
-import com.duopoints.models.composites.gets.CompositeRelationship;
-import com.duopoints.models.composites.gets.CompositeRelationshipBreakupRequest;
-import com.duopoints.models.composites.gets.CompositeRelationshipRequest;
+import com.duopoints.models.composites.CompositeRelationship;
+import com.duopoints.models.composites.CompositeRelationshipBreakupRequest;
+import com.duopoints.models.composites.CompositeRelationshipRequest;
 import com.duopoints.models.posts.NewRelationshipBreakupRequest;
 import com.duopoints.models.posts.NewRelationshipRequest;
 import com.duopoints.service.RelationshipService;

@@ -1,4 +1,4 @@
-package com.duopoints.models;
+package com.duopoints;
 
 public abstract class RequestParameters {
     public static final int CALLER_UNNECESSARY = -1;

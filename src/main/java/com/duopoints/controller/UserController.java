@@ -25,7 +25,7 @@ public class UserController {
      * USER
      ************/
 
-    @RequestMapping(method = RequestMethod.POST, value = "/regUser", consumes = "application/json", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.POST, value = "/regUser", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Userdata registerUser(@RequestBody UserReg userReg) {
         return userService.regUser(userReg);
     }

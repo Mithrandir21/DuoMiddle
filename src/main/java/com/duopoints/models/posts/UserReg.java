@@ -1,7 +1,7 @@
 package com.duopoints.models.posts;
 
-import com.duopoints.models.RequestParameters;
-import com.duopoints.models.enums.UserGender;
+import com.duopoints.RequestParameters;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class UserReg {
@@ -25,7 +25,7 @@ public class UserReg {
     public String nickname;
 
     @JsonProperty(RequestParameters.USER_REG_user_gender)
-    public UserGender gender;
+    public Character gender;
 
     @JsonProperty(RequestParameters.USER_REG_user_age)
     public short age;
@@ -72,7 +72,7 @@ public class UserReg {
     }
 
     @JsonProperty(RequestParameters.USER_REG_user_gender)
-    public UserGender getGender() {
+    public Character getGender() {
         return gender;
     }
 
@@ -127,7 +127,7 @@ public class UserReg {
     }
 
     @JsonProperty(RequestParameters.USER_REG_user_gender)
-    public void setGender(UserGender gender) {
+    public void setGender(Character gender) {
         this.gender = gender;
     }
 

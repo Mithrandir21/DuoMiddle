@@ -2,8 +2,8 @@ package com.duopoints.models;
 
 import com.duopoints.db.tables.pojos.Relationship;
 import com.duopoints.db.tables.pojos.Userdata;
-import com.duopoints.models.composites.gets.CompositePointEvent;
-import com.duopoints.models.composites.gets.CompositeRelationship;
+import com.duopoints.models.composites.CompositePointEvent;
+import com.duopoints.models.composites.CompositeRelationship;
 
 import java.util.List;
 

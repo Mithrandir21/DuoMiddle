@@ -132,9 +132,9 @@
                 <configuration>
                     <jdbc>
                         <driver>org.postgresql.Driver</driver>
-                        <url>jdbc:postgresql://ec2-54-217-243-160.eu-west-1.compute.amazonaws.com:5432/d3qa2abreh5t35?sslmode=require</url>
-                        <user>erezhdsnondwom</user>
-                        <password>f612bbca6171daffc87e54a485fca41a84be52d74290a042610abd68fbcfe7f0</password>
+                        <url>jdbc:postgresql://localhost:5432/postgres</url>
+                        <user>postgres</user>
+                        <password>bam</password>
                     </jdbc>
 
                     <generator>
@@ -174,6 +174,18 @@
                             <forcedType>
                                 <name>TEXT</name> <!-- From CITEXT -->
                                 <expression>content.userdata.User_Nickname</expression>
+                            </forcedType>
+                            <forcedType>
+                                <name>TEXT</name> <!-- From CITEXT -->
+                                <expression>content.Pointeventcommentdata.User_Firstname</expression>
+                            </forcedType>
+                            <forcedType>
+                                <name>TEXT</name> <!-- From CITEXT -->
+                                <expression>content.Pointeventcommentdata.User_Lastname</expression>
+                            </forcedType>
+                            <forcedType>
+                                <name>TEXT</name> <!-- From CITEXT -->
+                                <expression>content.Pointeventcommentdata.User_Nickname</expression>
                             </forcedType>
                         </forcedTypes>
 

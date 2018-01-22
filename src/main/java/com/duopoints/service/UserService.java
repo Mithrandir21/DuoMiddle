@@ -40,7 +40,7 @@ public class UserService {
                 .values(userReg.country, userReg.city,
                         userReg.auth_provider, userReg.auth_id,
                         userReg.email, userReg.firstname, userReg.lastname, userReg.nickname,
-                        userReg.gender.name(), userReg.age)
+                        userReg.gender.toString(), userReg.age)
                 .returning()
                 .fetchOne();
 

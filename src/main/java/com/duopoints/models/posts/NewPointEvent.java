@@ -1,4 +1,4 @@
-package com.duopoints.models.composites.posts;
+package com.duopoints.models.posts;
 
 import com.duopoints.db.tables.pojos.Point;
 import com.duopoints.db.tables.pojos.PointEvent;

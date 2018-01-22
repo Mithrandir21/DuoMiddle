@@ -1,6 +1,6 @@
 package com.duopoints.models.posts;
 
-import com.duopoints.models.RequestParameters;
+import com.duopoints.RequestParameters;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.UUID;

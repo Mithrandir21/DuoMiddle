@@ -1,8 +1,8 @@
 package com.duopoints.controller;
 
 import com.duopoints.Utils;
-import com.duopoints.models.composites.gets.CompositePointEvent;
-import com.duopoints.models.composites.posts.NewPointEvent;
+import com.duopoints.models.composites.CompositePointEvent;
+import com.duopoints.models.posts.NewPointEvent;
 import com.duopoints.service.PointService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
