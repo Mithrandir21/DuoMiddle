@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -33,6 +34,11 @@ public class UserController {
     @RequestMapping(method = RequestMethod.GET, value = "/getUser", produces = MediaType.APPLICATION_JSON_VALUE)
     public Userdata getUser(@RequestParam UUID userID) {
         return Utils.returnOrException(userService.getUser(userID));
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/searchForUser", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Userdata> searchForUser(@RequestParam String query) {
+        return userService.searchForUser(query);
     }
 
     @RequestMapping(method = RequestMethod.PATCH, value = "/updateUserAddress", produces = MediaType.APPLICATION_JSON_VALUE)

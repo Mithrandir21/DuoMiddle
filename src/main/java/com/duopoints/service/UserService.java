@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static com.duopoints.db.tables.UserAddress.USER_ADDRESS;
@@ -50,6 +52,22 @@ public class UserService {
     @Nullable
     public Userdata getUser(@NotNull UUID userID) {
         return duo.selectFrom(USERDATA).where(USERDATA.USER_UUID.eq(userID)).fetchOneInto(Userdata.class);
+    }
+
+    @NotNull
+    public List<Userdata> searchForUser(@NotNull String query) {
+        ArrayList<String> wheres = new ArrayList<>();
+
+        for (String singleQuery : query.split(" ")) {
+            wheres.add("(user_firstname like ('%" + singleQuery + "%') or user_lastname like ('%" + singleQuery + "%') or user_nickname like ('%" + singleQuery + "%'))");
+        }
+
+        String completeWhere = String.join(" OR ", wheres);
+
+        return duo.selectFrom(USERDATA)
+                .where(completeWhere)
+                .limit(50)
+                .fetchInto(Userdata.class);
     }
 
     /************
