@@ -3,7 +3,6 @@ package com.duopoints.service;
 import com.duopoints.db.tables.pojos.Relationship;
 import com.duopoints.db.tables.pojos.RelationshipBreakupRequest;
 import com.duopoints.db.tables.pojos.RelationshipRequest;
-import com.duopoints.db.tables.records.RelationshipAchievementListRecord;
 import com.duopoints.db.tables.records.RelationshipBreakupRequestRecord;
 import com.duopoints.db.tables.records.RelationshipRecord;
 import com.duopoints.db.tables.records.RelationshipRequestRecord;
@@ -29,7 +28,6 @@ import java.util.Arrays;
 import java.util.UUID;
 
 import static com.duopoints.db.tables.Relationship.RELATIONSHIP;
-import static com.duopoints.db.tables.RelationshipAchievementList.RELATIONSHIP_ACHIEVEMENT_LIST;
 import static com.duopoints.db.tables.RelationshipBreakupRequest.RELATIONSHIP_BREAKUP_REQUEST;
 import static com.duopoints.db.tables.RelationshipRequest.RELATIONSHIP_REQUEST;
 
@@ -102,13 +100,10 @@ public class RelationshipService {
             throw new ConflictException("User(" + userTwo + ") already in Active Relationship");
         }
 
-        // First Relationship Achievements List entry must be created for the new Relationship
-        RelationshipAchievementListRecord relationshipAchievementListRecord = duo.insertInto(RELATIONSHIP_ACHIEVEMENT_LIST).defaultValues().returning().fetchOne();
-
         // Create Relationship
         Relationship relationship = duo.insertInto(RELATIONSHIP)
-                .columns(RELATIONSHIP.USER_UUID_1, RELATIONSHIP.USER_UUID_2, RELATIONSHIP.STATUS, RELATIONSHIP.IS_SECRET, RELATIONSHIP.RELATIONSHIP_ACHIEVEMENT_LIST_UUID)
-                .values(userOne, userTwo, relStatus, isSecret, relationshipAchievementListRecord.getRelationshipAchievementListUuid())
+                .columns(RELATIONSHIP.USER_UUID_1, RELATIONSHIP.USER_UUID_2, RELATIONSHIP.STATUS, RELATIONSHIP.IS_SECRET)
+                .values(userOne, userTwo, relStatus, isSecret)
                 .returning()
                 .fetchOne()
                 .into(Relationship.class);
