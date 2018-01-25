@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -47,6 +48,11 @@ public class RelationshipController {
     @RequestMapping(method = RequestMethod.POST, value = "/createCompositeRelationshipRequest", produces = MediaType.APPLICATION_JSON_VALUE)
     public CompositeRelationshipRequest createCompositeRelationshipRequest(@RequestBody NewRelationshipRequest newRequest) {
         return relationshipService.createRelationshipRequest(newRequest);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/getAllActiveCompositeRelationshipRequests", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<CompositeRelationshipRequest> getAllActiveCompositeRelationshipRequests(@RequestParam UUID userID) {
+        return Utils.returnOrException(relationshipService.getAllActiveCompositeRelationshipRequests(userID));
     }
 
     @RequestMapping(method = RequestMethod.PATCH, value = "/setFinalCompositeRelationshipRequestStatus", produces = MediaType.APPLICATION_JSON_VALUE)

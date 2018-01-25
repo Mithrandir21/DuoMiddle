@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -28,6 +29,11 @@ public class FriendController {
         return Utils.returnOrException(friendService.getActiveCompositeFriendship(userOne, userTwo));
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/getAllActiveCompositeFriendships", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<CompositeFriendship> getAllActiveCompositeFriendships(@RequestParam UUID userID) {
+        return Utils.returnOrException(friendService.getAllActiveCompositeFriendships(userID));
+    }
+
 
     /*****************
      * FRIEND REQUEST
@@ -36,6 +42,11 @@ public class FriendController {
     @RequestMapping(method = RequestMethod.GET, value = "/getCompositeFriendRequest", produces = MediaType.APPLICATION_JSON_VALUE)
     public CompositeFriendRequest getCompositeFriendRequest(@RequestParam UUID friendRequestID) {
         return Utils.returnOrException(friendService.getCompositeFriendRequest(friendRequestID));
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/getAllActiveCompositeFriendRequests", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<CompositeFriendRequest> getAllActiveCompositeFriendRequests(@RequestParam UUID userID) {
+        return Utils.returnOrException(friendService.getAllActiveCompositeFriendRequests(userID));
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/createCompositeFriendRequest", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -1,5 +1,6 @@
 package com.duopoints.service;
 
+import com.duopoints.RequestParameters;
 import com.duopoints.db.tables.pojos.Relationship;
 import com.duopoints.db.tables.pojos.RelationshipBreakupRequest;
 import com.duopoints.db.tables.pojos.RelationshipRequest;
@@ -9,7 +10,6 @@ import com.duopoints.db.tables.records.RelationshipRequestRecord;
 import com.duopoints.errorhandling.ConflictException;
 import com.duopoints.errorhandling.NoMatchingRowException;
 import com.duopoints.models.FullRelationshipData;
-import com.duopoints.RequestParameters;
 import com.duopoints.models.composites.CompositeRelationship;
 import com.duopoints.models.composites.CompositeRelationshipBreakupRequest;
 import com.duopoints.models.composites.CompositeRelationshipRequest;
@@ -24,7 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import static com.duopoints.db.tables.Relationship.RELATIONSHIP;
@@ -148,6 +150,22 @@ public class RelationshipService {
 
     public CompositeRelationshipRequest getCompositeRelationshipRequest(@NotNull RelationshipRequest relationshipRequest) {
         return new CompositeRelationshipRequest(relationshipRequest, userService.getUser(relationshipRequest.getRelationshipRequestSenderUserUuid()), userService.getUser(relationshipRequest.getRelationshipRequestRecepientUserUuid()));
+    }
+
+    public List<CompositeRelationshipRequest> getAllActiveCompositeRelationshipRequests(UUID userID) {
+        List<RelationshipRequest> userRelationshipRequests = duo.selectFrom(RELATIONSHIP_REQUEST)
+                .where(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_SENDER_USER_UUID.eq(userID))
+                .or(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_RECEPIENT_USER_UUID.eq(userID))
+                .and(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_STATUS.eq(RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_requested))
+                .fetchInto(RelationshipRequest.class);
+
+        List<CompositeRelationshipRequest> userCompositeRelationshipRequests = new ArrayList<>();
+
+        for (RelationshipRequest singleRelationshipRequest : userRelationshipRequests) {
+            userCompositeRelationshipRequests.add(getCompositeRelationshipRequest(singleRelationshipRequest));
+        }
+
+        return userCompositeRelationshipRequests;
     }
 
     public CompositeRelationshipRequest createRelationshipRequest(@NotNull NewRelationshipRequest request) {

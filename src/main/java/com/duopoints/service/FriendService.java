@@ -1,12 +1,12 @@
 package com.duopoints.service;
 
+import com.duopoints.RequestParameters;
 import com.duopoints.db.tables.pojos.FriendRequest;
 import com.duopoints.db.tables.pojos.FriendRights;
 import com.duopoints.db.tables.pojos.Friendship;
 import com.duopoints.db.tables.records.FriendRequestRecord;
 import com.duopoints.errorhandling.ConflictException;
 import com.duopoints.errorhandling.NoMatchingRowException;
-import com.duopoints.RequestParameters;
 import com.duopoints.models.composites.CompositeFriendRequest;
 import com.duopoints.models.composites.CompositeFriendship;
 import com.duopoints.models.posts.NewFriendRequest;
@@ -19,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static com.duopoints.db.tables.FriendRequest.FRIEND_REQUEST;
@@ -50,10 +52,32 @@ public class FriendService {
         FriendRequest req = getFriendRequest(friendRequestID);
 
         if (req != null) {
-            return new CompositeFriendRequest(req, userService.getUser(req.getFriendRequestSenderUserUuid()), userService.getUser(req.getFriendRequestRecipientUserUuid()));
+            return getCompositeFriendRequest(req);
         } else {
             throw new NoMatchingRowException("No FriendRequest found for friendRequestID='" + friendRequestID + "'");
         }
+    }
+
+    @NotNull
+    public CompositeFriendRequest getCompositeFriendRequest(@NotNull FriendRequest req) {
+        return new CompositeFriendRequest(req, userService.getUser(req.getFriendRequestSenderUserUuid()), userService.getUser(req.getFriendRequestRecipientUserUuid()));
+    }
+
+    public List<CompositeFriendRequest> getAllActiveCompositeFriendRequests(UUID userID) {
+        List<FriendRequest> userFriendRequest = duo.selectFrom(FRIEND_REQUEST)
+                .where(FRIEND_REQUEST.FRIEND_REQUEST_RECIPIENT_USER_UUID.eq(userID))
+                .or(FRIEND_REQUEST.FRIEND_REQUEST_SENDER_USER_UUID.eq(userID))
+                .and(FRIEND_REQUEST.FRIEND_REQUEST_STATUS.in(RequestParameters.FRIEND_REQUEST_friend_request_status_sent,
+                        RequestParameters.FRIEND_REQUEST_friend_request_status_waiting_for_recipient))
+                .fetchInto(FriendRequest.class);
+
+        List<CompositeFriendRequest> userCompositeFriendRequest = new ArrayList<>();
+
+        for (FriendRequest singleFriendRequest : userFriendRequest) {
+            userCompositeFriendRequest.add(getCompositeFriendRequest(singleFriendRequest));
+        }
+
+        return userCompositeFriendRequest;
     }
 
     public CompositeFriendRequest createCompositeFriendRequest(@NotNull NewFriendRequest newFriendRequest) {
@@ -137,10 +161,31 @@ public class FriendService {
         Friendship friendship = getActiveFriendship(userOne, userTwo);
 
         if (friendship != null) {
-            return new CompositeFriendship(friendship, userService.getUser(friendship.getUserOneUuid()), userService.getUser(friendship.getUserTwoUuid()));
+            return getActiveCompositeFriendship(friendship);
         } else {
             throw new NoMatchingRowException("No Friendship found for userOne='" + userOne + "' and userTwo='" + userTwo + "'");
         }
+    }
+
+    @NotNull
+    public CompositeFriendship getActiveCompositeFriendship(@NotNull Friendship friendship) {
+        return new CompositeFriendship(friendship, userService.getUser(friendship.getUserOneUuid()), userService.getUser(friendship.getUserTwoUuid()));
+    }
+
+    public List<CompositeFriendship> getAllActiveCompositeFriendships(UUID userID) {
+        List<Friendship> userFriendships = duo.selectFrom(FRIENDSHIP)
+                .where(FRIENDSHIP.USER_ONE_UUID.eq(userID))
+                .or(FRIENDSHIP.USER_TWO_UUID.eq(userID))
+                .and(FRIENDSHIP.FRIENDSHIP_STATUS.eq(RequestParameters.FRIEND_friendship_status_active))
+                .fetchInto(Friendship.class);
+
+        List<CompositeFriendship> userCompositeFriendships = new ArrayList<>();
+
+        for (Friendship singleFriendship : userFriendships) {
+            userCompositeFriendships.add(getActiveCompositeFriendship(singleFriendship));
+        }
+
+        return userCompositeFriendships;
     }
 
     private CompositeFriendship createFriend(@NotNull UUID userOne, @NotNull UUID userTwo) {
