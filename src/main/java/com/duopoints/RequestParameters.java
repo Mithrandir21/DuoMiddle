@@ -260,6 +260,7 @@ public abstract class RequestParameters {
     public static final String RELATIONSHIP_REQUEST_rel_request_status_accepted = "ACCEPTED";
     public static final String RELATIONSHIP_REQUEST_rel_request_status_rejected = "REJECTED";
     public static final String RELATIONSHIP_REQUEST_rel_request_status_inactive = "INACTIVE";
+    public static final String RELATIONSHIP_REQUEST_rel_request_status_cancelled = "CANCELLED";
 
 
 
