@@ -149,13 +149,13 @@ public class RelationshipService {
     }
 
     public CompositeRelationshipRequest getCompositeRelationshipRequest(@NotNull RelationshipRequest relationshipRequest) {
-        return new CompositeRelationshipRequest(relationshipRequest, userService.getUser(relationshipRequest.getRelationshipRequestSenderUserUuid()), userService.getUser(relationshipRequest.getRelationshipRequestRecepientUserUuid()));
+        return new CompositeRelationshipRequest(relationshipRequest, userService.getUser(relationshipRequest.getRelationshipRequestSenderUserUuid()), userService.getUser(relationshipRequest.getRelationshipRequestRecipientUserUuid()));
     }
 
     public List<CompositeRelationshipRequest> getAllActiveCompositeRelationshipRequests(UUID userID) {
         List<RelationshipRequest> userRelationshipRequests = duo.selectFrom(RELATIONSHIP_REQUEST)
                 .where(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_SENDER_USER_UUID.eq(userID))
-                .or(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_RECEPIENT_USER_UUID.eq(userID))
+                .or(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_RECIPIENT_USER_UUID.eq(userID))
                 .and(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_STATUS.eq(RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_requested))
                 .fetchInto(RelationshipRequest.class);
 
@@ -180,7 +180,7 @@ public class RelationshipService {
 
         // Check if a request exists with similar data
         Condition sameRecipientID = RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_SENDER_USER_UUID.eq(request.senderUserID).or(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_SENDER_USER_UUID.eq(request.senderUserID));
-        Condition sameRecipientEmail = RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_SENDER_USER_UUID.eq(request.senderUserID).or(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_RECEPIENT_USER_EMAIL.eq(request.recipientUserEmail));
+        Condition sameRecipientEmail = RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_SENDER_USER_UUID.eq(request.senderUserID).or(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_RECIPIENT_USER_EMAIL.eq(request.recipientUserEmail));
         Condition statusNotAcceptedOrRejected = RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_STATUS.notIn(Arrays.asList(RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_accepted, RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_rejected));
 
         if (duo.selectFrom(RELATIONSHIP_REQUEST).where(sameRecipientID).or(sameRecipientEmail).and(statusNotAcceptedOrRejected).fetch().size() > 0) {
@@ -189,8 +189,8 @@ public class RelationshipService {
 
         // At this point no request exists between the sender and recipient that is not in accepted or rejected state
         RelationshipRequest relationshipRequest = duo.insertInto(RELATIONSHIP_REQUEST)
-                .columns(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_SENDER_USER_UUID, RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_RECEPIENT_USER_NAME,
-                        RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_RECEPIENT_USER_EMAIL, RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_RECEPIENT_USER_UUID,
+                .columns(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_SENDER_USER_UUID, RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_RECIPIENT_USER_NAME,
+                        RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_RECIPIENT_USER_EMAIL, RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_RECIPIENT_USER_UUID,
                         RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_COMMENT, RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_DESIRED_REL_STATUS, RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_REL_IS_SECRET,
                         RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_STATUS)
                 .values(request.senderUserID, request.recipientUserName, request.recipientUserEmail, request.recipientUserID,
@@ -224,7 +224,7 @@ public class RelationshipService {
         // If the status is ACCEPTED, we must first create a new Relationship
         if (status.equalsIgnoreCase(RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_accepted)) {
             if (createRelationship(relationshipRequest.getRelationshipRequestSenderUserUuid(),
-                    relationshipRequest.getRelationshipRequestRecepientUserUuid(),
+                    relationshipRequest.getRelationshipRequestRecipientUserUuid(),
                     relationshipRequest.getRelationshipRequestDesiredRelStatus(),
                     relationshipRequest.getRelationshipRequestRelIsSecret()) == null) {
                 throw new NoMatchingRowException("No Relationship created! Error!");

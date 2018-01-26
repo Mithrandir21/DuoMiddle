@@ -263,7 +263,6 @@ public abstract class RequestParameters {
     public static final String RELATIONSHIP_REQUEST_rel_request_status_cancelled = "CANCELLED";
 
 
-
     /*********************
      * USER ADDRESS
      *********************/
@@ -321,7 +320,7 @@ public abstract class RequestParameters {
     public static final String USER_REG_user_nickname = "user_nickname";
     public static final String USER_REG_user_gender = "user_gender";
     public static final String USER_REG_user_age = "user_age";
-    public static final String USER_REG_user_country= "adr_country";
+    public static final String USER_REG_user_country = "adr_country";
     public static final String USER_REG_user_city = "adr_city";
 
 

@@ -9,12 +9,12 @@ import javax.validation.constraints.Null;
 public class CompositeRelationshipRequest extends RelationshipRequest {
 
     private Userdata senderUser;
-    private Userdata recepientUser;
+    private Userdata recipientUser;
 
-    public CompositeRelationshipRequest(@NotNull RelationshipRequest value,@NotNull  Userdata senderUser,@Null Userdata recepientUser) {
+    public CompositeRelationshipRequest(@NotNull RelationshipRequest value,@NotNull  Userdata senderUser,@Null Userdata recipientUser) {
         super(value);
         this.senderUser = senderUser;
-        this.recepientUser = recepientUser;
+        this.recipientUser = recipientUser;
     }
 
     @NotNull
@@ -26,11 +26,11 @@ public class CompositeRelationshipRequest extends RelationshipRequest {
         this.senderUser = senderUser;
     }
 
-    public Userdata getRecepientUser() {
-        return recepientUser;
+    public Userdata getRecipientUser() {
+        return recipientUser;
     }
 
-    public void setRecepientUser(Userdata recepientUser) {
-        this.recepientUser = recepientUser;
+    public void setRecipientUser(Userdata recipientUser) {
+        this.recipientUser = recipientUser;
     }
 }

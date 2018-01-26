@@ -39,17 +39,17 @@ public class NewRelationshipRequest {
     }
 
     @JsonProperty(RequestParameters.RELATIONSHIP_REQUEST_rel_request_recipient_user_name)
-    public String getRecepientUserName() {
+    public String getRecipientUserName() {
         return recipientUserName;
     }
 
     @JsonProperty(RequestParameters.RELATIONSHIP_REQUEST_rel_request_recipient_user_email)
-    public String getRecepientUserEmail() {
+    public String getRecipientUserEmail() {
         return recipientUserEmail;
     }
 
     @JsonProperty(RequestParameters.RELATIONSHIP_REQUEST_rel_request_recipient_user_db_id)
-    public UUID getRecepientUserID() {
+    public UUID getRecipientUserID() {
         return recipientUserID;
     }
 
@@ -78,17 +78,17 @@ public class NewRelationshipRequest {
     }
 
     @JsonProperty(RequestParameters.RELATIONSHIP_REQUEST_rel_request_recipient_user_name)
-    public void setRecepientUserName(String recepientUserName) {
+    public void setRecipientUserName(String recepientUserName) {
         this.recipientUserName = recepientUserName;
     }
 
     @JsonProperty(RequestParameters.RELATIONSHIP_REQUEST_rel_request_recipient_user_email)
-    public void setRecepientUserEmail(String recepientUserEmail) {
+    public void setRecipientUserEmail(String recepientUserEmail) {
         this.recipientUserEmail = recepientUserEmail;
     }
 
     @JsonProperty(RequestParameters.RELATIONSHIP_REQUEST_rel_request_recipient_user_db_id)
-    public void setRecepientUserID(UUID recepientUserID) {
+    public void setRecipientUserID(UUID recepientUserID) {
         this.recipientUserID = recepientUserID;
     }
 
