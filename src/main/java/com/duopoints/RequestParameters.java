@@ -60,17 +60,16 @@ public abstract class RequestParameters {
 
 
     /*********************
-     * FRIEND REQUEST
+     * FRIENDSHIP REQUEST
      *********************/
 
-    public static final String FRIEND_REQUEST_SEGMENT_NAME = "friend_request";
-    public static final String FRIEND_REQUEST_friend_request_uuid = "friend_request_uuid";
-    public static final String FRIEND_REQUEST_friend_request_sender_user_uuid = "friend_request_sender_user_uuid";
-    public static final String FRIEND_REQUEST_friend_request_recipient_user_uuid = "friend_request_recipient_user_uuid";
-    public static final String FRIEND_REQUEST_friend_request_comment = "friend_request_comment";
-    public static final String FRIEND_REQUEST_friend_request_status = "friend_request_status";
+    public static final String FRIENDSHIP_REQUEST_SEGMENT_NAME = "friendship_request";
+    public static final String FRIENDSHIP_REQUEST_friend_request_uuid = "friendship_request_uuid";
+    public static final String FRIENDSHIP_REQUEST_friend_request_sender_user_uuid = "friendship_request_sender_user_uuid";
+    public static final String FRIENDSHIP_REQUEST_friend_request_recipient_user_uuid = "friendship_request_recipient_user_uuid";
+    public static final String FRIENDSHIP_REQUEST_friend_request_comment = "friendship_request_comment";
+    public static final String FRIENDSHIP_REQUEST_friend_request_status = "friendship_request_status";
 
-    public static final String FRIEND_REQUEST_friend_request_status_sent = "SENT";
     public static final String FRIEND_REQUEST_friend_request_status_waiting_for_recipient = "WAITING_FOR_RECIPIENT";
     public static final String FRIEND_REQUEST_friend_request_status_completed = "COMPLETED";
     public static final String FRIEND_REQUEST_friend_request_status_rejected = "REJECTED";

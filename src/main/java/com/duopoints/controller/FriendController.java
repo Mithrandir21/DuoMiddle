@@ -1,9 +1,9 @@
 package com.duopoints.controller;
 
 import com.duopoints.Utils;
-import com.duopoints.models.composites.CompositeFriendRequest;
+import com.duopoints.models.composites.CompositeFriendshipRequest;
 import com.duopoints.models.composites.CompositeFriendship;
-import com.duopoints.models.posts.NewFriendRequest;
+import com.duopoints.models.posts.NewFriendshipRequest;
 import com.duopoints.service.FriendService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -40,22 +40,22 @@ public class FriendController {
      *****************/
 
     @RequestMapping(method = RequestMethod.GET, value = "/getCompositeFriendRequest", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CompositeFriendRequest getCompositeFriendRequest(@RequestParam UUID friendRequestID) {
+    public CompositeFriendshipRequest getCompositeFriendRequest(@RequestParam UUID friendRequestID) {
         return Utils.returnOrException(friendService.getCompositeFriendRequest(friendRequestID));
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/getAllActiveCompositeFriendRequests", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<CompositeFriendRequest> getAllActiveCompositeFriendRequests(@RequestParam UUID userID) {
+    public List<CompositeFriendshipRequest> getAllActiveCompositeFriendRequests(@RequestParam UUID userID) {
         return Utils.returnOrException(friendService.getAllActiveCompositeFriendRequests(userID));
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/createCompositeFriendRequest", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CompositeFriendRequest createCompositeFriendRequest(@RequestBody NewFriendRequest newFriendRequest) {
-        return Utils.returnOrException(friendService.createCompositeFriendRequest(newFriendRequest));
+    public CompositeFriendshipRequest createCompositeFriendRequest(@RequestBody NewFriendshipRequest newFriendshipRequest) {
+        return Utils.returnOrException(friendService.createCompositeFriendRequest(newFriendshipRequest));
     }
 
     @RequestMapping(method = RequestMethod.PATCH, value = "/setFinalCompositeFriendRequestStatus", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CompositeFriendRequest setFinalCompositeFriendRequestStatus(@RequestParam UUID requestID, @RequestParam String finalStatus) {
+    public CompositeFriendshipRequest setFinalCompositeFriendRequestStatus(@RequestParam UUID requestID, @RequestParam String finalStatus) {
         return Utils.returnOrException(friendService.setFinalCompositeFriendRequestStatus(requestID, finalStatus));
     }
 }

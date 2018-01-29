@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -56,16 +55,10 @@ public class UserService {
 
     @NotNull
     public List<Userdata> searchForUser(@NotNull String query) {
-        ArrayList<String> wheres = new ArrayList<>();
-
-        for (String singleQuery : query.split(" ")) {
-            wheres.add("(user_firstname like ('%" + singleQuery + "%') or user_lastname like ('%" + singleQuery + "%') or user_nickname like ('%" + singleQuery + "%'))");
-        }
-
-        String completeWhere = String.join(" OR ", wheres);
-
         return duo.selectFrom(USERDATA)
-                .where(completeWhere)
+                .where(USERDATA.USER_FIRSTNAME.like("%" + query + "%"))
+                .or(USERDATA.USER_LASTNAME.like("%" + query + "%"))
+                .or(USERDATA.USER_NICKNAME.like("%" + query + "%"))
                 .limit(50)
                 .fetchInto(Userdata.class);
     }

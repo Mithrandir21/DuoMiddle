@@ -7,9 +7,9 @@ import com.duopoints.db.tables.pojos.Friendship;
 import com.duopoints.db.tables.records.FriendRequestRecord;
 import com.duopoints.errorhandling.ConflictException;
 import com.duopoints.errorhandling.NoMatchingRowException;
-import com.duopoints.models.composites.CompositeFriendRequest;
+import com.duopoints.models.composites.CompositeFriendshipRequest;
 import com.duopoints.models.composites.CompositeFriendship;
-import com.duopoints.models.posts.NewFriendRequest;
+import com.duopoints.models.posts.NewFriendshipRequest;
 import org.jooq.Condition;
 import org.jooq.impl.DefaultDSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +48,7 @@ public class FriendService {
     }
 
     @NotNull
-    public CompositeFriendRequest getCompositeFriendRequest(@NotNull UUID friendRequestID) {
+    public CompositeFriendshipRequest getCompositeFriendRequest(@NotNull UUID friendRequestID) {
         FriendRequest req = getFriendRequest(friendRequestID);
 
         if (req != null) {
@@ -59,34 +59,32 @@ public class FriendService {
     }
 
     @NotNull
-    public CompositeFriendRequest getCompositeFriendRequest(@NotNull FriendRequest req) {
-        return new CompositeFriendRequest(req, userService.getUser(req.getFriendRequestSenderUserUuid()), userService.getUser(req.getFriendRequestRecipientUserUuid()));
+    public CompositeFriendshipRequest getCompositeFriendRequest(@NotNull FriendRequest req) {
+        return new CompositeFriendshipRequest(req, userService.getUser(req.getFriendRequestSenderUserUuid()), userService.getUser(req.getFriendRequestRecipientUserUuid()));
     }
 
-    public List<CompositeFriendRequest> getAllActiveCompositeFriendRequests(UUID userID) {
+    public List<CompositeFriendshipRequest> getAllActiveCompositeFriendRequests(UUID userID) {
         List<FriendRequest> userFriendRequest = duo.selectFrom(FRIEND_REQUEST)
                 .where(FRIEND_REQUEST.FRIEND_REQUEST_RECIPIENT_USER_UUID.eq(userID))
                 .or(FRIEND_REQUEST.FRIEND_REQUEST_SENDER_USER_UUID.eq(userID))
-                .and(FRIEND_REQUEST.FRIEND_REQUEST_STATUS.in(RequestParameters.FRIEND_REQUEST_friend_request_status_sent,
-                        RequestParameters.FRIEND_REQUEST_friend_request_status_waiting_for_recipient))
+                .and(FRIEND_REQUEST.FRIEND_REQUEST_STATUS.eq(RequestParameters.FRIEND_REQUEST_friend_request_status_waiting_for_recipient))
                 .fetchInto(FriendRequest.class);
 
-        List<CompositeFriendRequest> userCompositeFriendRequest = new ArrayList<>();
+        List<CompositeFriendshipRequest> userCompositeFriendshipRequest = new ArrayList<>();
 
         for (FriendRequest singleFriendRequest : userFriendRequest) {
-            userCompositeFriendRequest.add(getCompositeFriendRequest(singleFriendRequest));
+            userCompositeFriendshipRequest.add(getCompositeFriendRequest(singleFriendRequest));
         }
 
-        return userCompositeFriendRequest;
+        return userCompositeFriendshipRequest;
     }
 
-    public CompositeFriendRequest createCompositeFriendRequest(@NotNull NewFriendRequest newFriendRequest) {
+    public CompositeFriendshipRequest createCompositeFriendRequest(@NotNull NewFriendshipRequest newFriendshipRequest) {
         // First check if there already exists a friend request for the given Sender and Recipient that is not WAITING_FOR_RECIPIENT
         FriendRequest friendrequest = duo.selectFrom(FRIEND_REQUEST)
-                .where(FRIEND_REQUEST.FRIEND_REQUEST_SENDER_USER_UUID.eq(newFriendRequest.requestSenderID),
-                        FRIEND_REQUEST.FRIEND_REQUEST_RECIPIENT_USER_UUID.eq(newFriendRequest.requestRecipientID))
-                .and(FRIEND_REQUEST.FRIEND_REQUEST_STATUS.in(RequestParameters.FRIEND_REQUEST_friend_request_status_sent,
-                        RequestParameters.FRIEND_REQUEST_friend_request_status_waiting_for_recipient))
+                .where(FRIEND_REQUEST.FRIEND_REQUEST_SENDER_USER_UUID.eq(newFriendshipRequest.requestSenderID),
+                        FRIEND_REQUEST.FRIEND_REQUEST_RECIPIENT_USER_UUID.eq(newFriendshipRequest.requestRecipientID))
+                .and(FRIEND_REQUEST.FRIEND_REQUEST_STATUS.eq(RequestParameters.FRIEND_REQUEST_friend_request_status_waiting_for_recipient))
                 .fetchOneInto(FriendRequest.class);
 
         if (friendrequest != null) {
@@ -96,17 +94,17 @@ public class FriendService {
         FriendRequest friendRequest = duo.insertInto(FRIEND_REQUEST)
                 .columns(FRIEND_REQUEST.FRIEND_REQUEST_SENDER_USER_UUID, FRIEND_REQUEST.FRIEND_REQUEST_RECIPIENT_USER_UUID,
                         FRIEND_REQUEST.FRIEND_REQUEST_COMMENT, FRIEND_REQUEST.FRIEND_REQUEST_STATUS)
-                .values(newFriendRequest.requestSenderID, newFriendRequest.requestRecipientID, newFriendRequest.requestComment,
+                .values(newFriendshipRequest.requestSenderID, newFriendshipRequest.requestRecipientID, newFriendshipRequest.requestComment,
                         RequestParameters.FRIEND_REQUEST_friend_request_status_waiting_for_recipient)
                 .returning()
                 .fetchOne()
                 .into(FriendRequest.class);
 
-        return new CompositeFriendRequest(friendRequest, userService.getUser(friendRequest.getFriendRequestSenderUserUuid()), userService.getUser(friendRequest.getFriendRequestRecipientUserUuid()));
+        return new CompositeFriendshipRequest(friendRequest, userService.getUser(friendRequest.getFriendRequestSenderUserUuid()), userService.getUser(friendRequest.getFriendRequestRecipientUserUuid()));
     }
 
     @Transactional
-    public CompositeFriendRequest setFinalCompositeFriendRequestStatus(@NotNull UUID requestID, @NotNull String status) {
+    public CompositeFriendshipRequest setFinalCompositeFriendRequestStatus(@NotNull UUID requestID, @NotNull String status) {
         // First we retrieve the Request
         FriendRequest friendrequest = duo.selectFrom(FRIEND_REQUEST)
                 .where(FRIEND_REQUEST.FRIEND_REQUEST_UUID.eq(requestID)).fetchOneInto(FriendRequest.class);
