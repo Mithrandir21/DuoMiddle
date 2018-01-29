@@ -1,6 +1,5 @@
 package com.duopoints.models.composites;
 
-import com.duopoints.db.tables.pojos.FriendRights;
 import com.duopoints.db.tables.pojos.Friendship;
 import com.duopoints.db.tables.pojos.Userdata;
 
