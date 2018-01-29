@@ -81,6 +81,14 @@ public class PointService {
         return duo.selectFrom(POINT_EVENT).where(POINT_EVENT.RELATIONSHIP_UUID.eq(relID)).fetchInto(PointEvent.class);
     }
 
+    @NotNull
+    public List<PointEvent> getPointEventsGivenByUser(@NotNull UUID relID, @NotNull UUID givingUser) {
+        return duo.selectFrom(POINT_EVENT)
+                .where(POINT_EVENT.RELATIONSHIP_UUID.eq(relID))
+                .and(POINT_EVENT.POINT_GIVER_USER_UUID.eq(givingUser))
+                .fetchInto(PointEvent.class);
+    }
+
 
     /*****************************
      * CompositePointEvent
@@ -133,6 +141,27 @@ public class PointService {
 
         // First get all the PointEvents of a Relationship
         List<PointEvent> relationshipPointEvents = getPointEvents(compositeRelationship.getRelationshipUuid());
+
+        for (PointEvent singleEvent : relationshipPointEvents) {
+            compositePointEvents.add(getCompositePointEvent(singleEvent, compositeRelationship));
+        }
+
+        return compositePointEvents;
+    }
+
+    public List<CompositePointEvent> getCompositePointEventsGivenByUserOne(@NotNull CompositeRelationship compositeRelationship) {
+        return getCompositePointEventsGivenByUser(compositeRelationship, compositeRelationship.getUserUuid_1());
+    }
+
+    public List<CompositePointEvent> getCompositePointEventsGivenByUserTwo(@NotNull CompositeRelationship compositeRelationship) {
+        return getCompositePointEventsGivenByUser(compositeRelationship, compositeRelationship.getUserUuid_2());
+    }
+
+    private List<CompositePointEvent> getCompositePointEventsGivenByUser(@NotNull CompositeRelationship compositeRelationship, @NotNull UUID userID) {
+        List<CompositePointEvent> compositePointEvents = new ArrayList<>();
+
+        // First get all the PointEvents of a Relationship
+        List<PointEvent> relationshipPointEvents = getPointEventsGivenByUser(compositeRelationship.getRelationshipUuid(), userID);
 
         for (PointEvent singleEvent : relationshipPointEvents) {
             compositePointEvents.add(getCompositePointEvent(singleEvent, compositeRelationship));

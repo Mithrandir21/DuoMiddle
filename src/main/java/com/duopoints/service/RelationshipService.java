@@ -342,4 +342,21 @@ public class RelationshipService {
             throw new NoMatchingRowException("No CompositeRelationship found for relID='" + relID + "'");
         }
     }
+
+    @NotNull
+    public FullRelationshipData getFullRelationshipData(@NotNull UUID relID, @NotNull UUID givingUser) {
+        CompositeRelationship compositeRelationship = getCompositeRelationship(relID);
+
+        if (compositeRelationship != null) {
+            if (compositeRelationship.getUserUuid_1().equals(givingUser)) {
+                return new FullRelationshipData(compositeRelationship, compositeRelationship.getUserOne(), compositeRelationship.getUserTwo(), pointService.getCompositePointEventsGivenByUserOne(compositeRelationship));
+            } else if (compositeRelationship.getUserUuid_2().equals(givingUser)) {
+                return new FullRelationshipData(compositeRelationship, compositeRelationship.getUserOne(), compositeRelationship.getUserTwo(), pointService.getCompositePointEventsGivenByUserTwo(compositeRelationship));
+            } else {
+                throw new NoMatchingRowException("No CompositeRelationship found for relID='" + relID + "' with givingUser='" + givingUser + "'");
+            }
+        } else {
+            throw new NoMatchingRowException("No CompositeRelationship found for relID='" + relID + "'");
+        }
+    }
 }

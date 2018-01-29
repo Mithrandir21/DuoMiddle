@@ -40,6 +40,11 @@ public class RelationshipController {
     public FullRelationshipData getFullRelationshipData(@RequestParam UUID relID) {
         return Utils.returnOrException(relationshipService.getFullRelationshipData(relID));
     }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/getFullRelationshipDataByGivingUser", produces = MediaType.APPLICATION_JSON_VALUE)
+    public FullRelationshipData getFullRelationshipDataByGivingUser(@RequestParam UUID relID, @RequestParam UUID givingUserID) {
+        return Utils.returnOrException(relationshipService.getFullRelationshipData(relID, givingUserID));
+    }
     
     /*************************
      * RELATIONSHIP REQUESTS
