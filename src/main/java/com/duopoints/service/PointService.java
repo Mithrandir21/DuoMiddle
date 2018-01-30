@@ -1,9 +1,6 @@
 package com.duopoints.service;
 
-import com.duopoints.db.tables.pojos.Point;
-import com.duopoints.db.tables.pojos.PointEvent;
-import com.duopoints.db.tables.pojos.Pointdata;
-import com.duopoints.db.tables.pojos.Pointeventcommentdata;
+import com.duopoints.db.tables.pojos.*;
 import com.duopoints.db.tables.records.PointRecord;
 import com.duopoints.errorhandling.NoMatchingRowException;
 import com.duopoints.models.composites.CompositePointEvent;
@@ -17,9 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static com.duopoints.db.tables.PointEvent.POINT_EVENT;
 import static com.duopoints.db.tables.Pointdata.POINTDATA;
@@ -134,6 +129,22 @@ public class PointService {
 
     public List<CompositePointEvent> getCompositePointEvents(@NotNull UUID relID) {
         return getCompositePointEvents(relationshipService.getCompositeRelationship(relID));
+    }
+
+    public List<CompositePointEvent> getCompositePointEvents(@NotNull List<UUID> userIDs) {
+        // Set which insert sorted based on Creation timestamp of CompositePointEvent
+        Set<CompositePointEvent> totalEvents = new TreeSet<>(Comparator.comparing(PointEvent::getCreatedUtc));
+
+        // First get the Users Relationships
+        List<Relationship> relationships = relationshipService.getActiveUsersRelationship(userIDs);
+
+        // For each Rel, get the CompositeRelationship and then all CompositePointEvents. Add sorted to Set.
+        for (Relationship rel : relationships) {
+            totalEvents.addAll(getCompositePointEvents(relationshipService.getCompositeRelationship(rel)));
+        }
+
+        // Return a List containing the set items in their sorted order.
+        return new ArrayList<>(totalEvents);
     }
 
     public List<CompositePointEvent> getCompositePointEvents(@NotNull CompositeRelationship compositeRelationship) {

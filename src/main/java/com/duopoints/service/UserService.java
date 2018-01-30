@@ -5,6 +5,7 @@ import com.duopoints.db.tables.pojos.Userdata;
 import com.duopoints.db.tables.records.UserAddressRecord;
 import com.duopoints.db.tables.records.UserdataRecord;
 import com.duopoints.errorhandling.NoMatchingRowException;
+import com.duopoints.models.composites.CompositePointEvent;
 import com.duopoints.models.posts.UserReg;
 import org.jooq.impl.DefaultDSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,12 @@ public class UserService {
     @Autowired
     @Qualifier("dsl")
     private DefaultDSLContext duo;
+
+    @Autowired
+    private FriendService friendService;
+
+    @Autowired
+    private PointService pointService;
 
     /**********
      * USER
@@ -80,5 +87,21 @@ public class UserService {
         } else {
             throw new NoMatchingRowException("No UserAddress found with ID='" + newUserAddress.getAddressUuid() + "'");
         }
+    }
+
+
+    /**********
+     * FEED
+     **********/
+
+    public List<CompositePointEvent> getUsersFeed(@NotNull UUID userID) {
+        // First get a list of users Friends UUIDs
+        List<UUID> userIDs = friendService.getAllActiveFriendshipsUUIDs(userID);
+
+        // Add given UUID to the list userIDs
+        userIDs.add(userID);
+
+        // This retrieves all the CompositePointEvents for all the Active Relationships for all the given UUIDs.
+        return pointService.getCompositePointEvents(userIDs);
     }
 }

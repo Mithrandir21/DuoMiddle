@@ -7,8 +7,8 @@ import com.duopoints.db.tables.pojos.Friendship;
 import com.duopoints.db.tables.records.FriendRequestRecord;
 import com.duopoints.errorhandling.ConflictException;
 import com.duopoints.errorhandling.NoMatchingRowException;
-import com.duopoints.models.composites.CompositeFriendshipRequest;
 import com.duopoints.models.composites.CompositeFriendship;
+import com.duopoints.models.composites.CompositeFriendshipRequest;
 import com.duopoints.models.posts.NewFriendshipRequest;
 import org.jooq.Condition;
 import org.jooq.impl.DefaultDSLContext;
@@ -20,8 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.duopoints.db.tables.FriendRequest.FRIEND_REQUEST;
 import static com.duopoints.db.tables.FriendRights.FRIEND_RIGHTS;
@@ -170,12 +173,34 @@ public class FriendService {
         return new CompositeFriendship(friendship, userService.getUser(friendship.getUserOneUuid()), userService.getUser(friendship.getUserTwoUuid()));
     }
 
-    public List<CompositeFriendship> getAllActiveCompositeFriendships(UUID userID) {
-        List<Friendship> userFriendships = duo.selectFrom(FRIENDSHIP)
+    public List<Friendship> getAllActiveFriendships(UUID userID) {
+        return duo.selectFrom(FRIENDSHIP)
                 .where(FRIENDSHIP.USER_ONE_UUID.eq(userID))
                 .or(FRIENDSHIP.USER_TWO_UUID.eq(userID))
                 .and(FRIENDSHIP.FRIENDSHIP_STATUS.eq(RequestParameters.FRIEND_friendship_status_active))
                 .fetchInto(Friendship.class);
+    }
+
+    public List<UUID> getAllActiveFriendshipsUUIDs(UUID userID) {
+        List<UUID> userOneIsFriend = duo.select(FRIENDSHIP.USER_ONE_UUID)
+                .from(FRIENDSHIP)
+                .where(FRIENDSHIP.USER_TWO_UUID.eq(userID))
+                .and(FRIENDSHIP.FRIENDSHIP_STATUS.eq(RequestParameters.FRIEND_friendship_status_active))
+                .fetchInto(UUID.class);
+
+        List<UUID> userTwoIsFriend = duo.select(FRIENDSHIP.USER_TWO_UUID)
+                .from(FRIENDSHIP)
+                .where(FRIENDSHIP.USER_ONE_UUID.eq(userID))
+                .and(FRIENDSHIP.FRIENDSHIP_STATUS.eq(RequestParameters.FRIEND_friendship_status_active))
+                .fetchInto(UUID.class);
+
+        return Stream.of(userOneIsFriend, userTwoIsFriend)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
+    public List<CompositeFriendship> getAllActiveCompositeFriendships(UUID userID) {
+        List<Friendship> userFriendships = getAllActiveFriendships(userID);
 
         List<CompositeFriendship> userCompositeFriendships = new ArrayList<>();
 

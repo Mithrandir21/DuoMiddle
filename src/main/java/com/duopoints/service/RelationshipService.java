@@ -66,6 +66,15 @@ public class RelationshipService {
     }
 
     @NotNull
+    public List<Relationship> getActiveUsersRelationship(@NotNull List<UUID> userIDs) {
+        return duo.selectFrom(RELATIONSHIP)
+                .where(RELATIONSHIP.USER_UUID_1.in(userIDs))
+                .or(RELATIONSHIP.USER_UUID_2.in(userIDs))
+                .and(RELATIONSHIP.STATUS.notEqual(RequestParameters.RELATIONSHIP_status_ended))
+                .fetchInto(Relationship.class);
+    }
+
+    @NotNull
     public CompositeRelationship getCompositeRelationship(@NotNull UUID relID) {
         Relationship relationship = getRelationship(relID);
 
