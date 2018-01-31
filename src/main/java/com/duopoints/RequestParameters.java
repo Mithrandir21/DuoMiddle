@@ -147,6 +147,9 @@ public abstract class RequestParameters {
     public static final String POINT_EVENT_EMOTION_point_event_emotion_title = "point_event_emotion_title";
     public static final String POINT_EVENT_EMOTION_point_event_emotion_description = "point_event_emotion_description";
 
+    public static final String POINT_EVENT_EMOTION_status_active = "ACTIVE";
+    public static final String POINT_EVENT_EMOTION_status_deactivated = "DEACTIVATED";
+
 
     /*********************
      * POINT TYPE
@@ -158,6 +161,9 @@ public abstract class RequestParameters {
     public static final String POINT_TYPE_point_type_title = "point_type_title";
     public static final String POINT_TYPE_point_type_description = "point_type_description";
 
+    public static final String POINT_TYPE_status_active = "ACTIVE";
+    public static final String POINT_TYPE_status_deactivated = "DEACTIVATED";
+
 
     /*********************
      * POINT TYPE CATEGORY
@@ -167,6 +173,9 @@ public abstract class RequestParameters {
     public static final String POINT_TYPE_CATEGORY_point_type_category_number = "point_type_category_number";
     public static final String POINT_TYPE_CATEGORY_point_type_category_title = "point_type_category_title";
     public static final String POINT_TYPE_CATEGORY_point_type_category_description = "point_type_category_description";
+
+    public static final String POINT_TYPE_CATEGORY_status_active = "ACTIVE";
+    public static final String POINT_TYPE_CATEGORY_status_deactivated = "DEACTIVATED";
 
 
     /*********************

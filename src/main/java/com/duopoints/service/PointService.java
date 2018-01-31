@@ -1,5 +1,6 @@
 package com.duopoints.service;
 
+import com.duopoints.RequestParameters;
 import com.duopoints.db.tables.pojos.*;
 import com.duopoints.db.tables.records.PointRecord;
 import com.duopoints.errorhandling.NoMatchingRowException;
@@ -17,6 +18,9 @@ import javax.validation.constraints.NotNull;
 import java.util.*;
 
 import static com.duopoints.db.tables.PointEvent.POINT_EVENT;
+import static com.duopoints.db.tables.PointEventEmotion.POINT_EVENT_EMOTION;
+import static com.duopoints.db.tables.PointType.POINT_TYPE;
+import static com.duopoints.db.tables.PointTypeCategory.POINT_TYPE_CATEGORY;
 import static com.duopoints.db.tables.Pointdata.POINTDATA;
 import static com.duopoints.db.tables.Pointeventcommentdata.POINTEVENTCOMMENTDATA;
 
@@ -53,10 +57,9 @@ public class PointService {
         for (Point singlePoint : combinedPointEvent.getPoints()) {
             points.add(new PointRecord()
                     .value2(newPointEvent.getPointEventUuid())
-                    .value3(singlePoint.getPointValue())
-                    .value4(singlePoint.getPointTypeNumber())
-                    .value5(position)
-                    .value6(singlePoint.getPointComment()));
+                    .value3(singlePoint.getPointTypeNumber())
+                    .value4(position)
+                    .value5(singlePoint.getPointComment()));
 
             position++;
         }
@@ -143,7 +146,7 @@ public class PointService {
             totalEvents.addAll(getCompositePointEvents(relationshipService.getCompositeRelationship(rel)));
         }
 
-        // Return a List containing the set items in their sorted order.
+        // Reu
         return new ArrayList<>(totalEvents);
     }
 
@@ -179,6 +182,43 @@ public class PointService {
         }
 
         return compositePointEvents;
+    }
+
+
+    /*******************
+     * POINT TYPES
+     *******************/
+
+    @NotNull
+    public List<PointType> getAllActivePointTypes() {
+        return duo.selectFrom(POINT_TYPE).where(POINT_TYPE.POINT_TYPE_STATUS.eq(RequestParameters.POINT_TYPE_status_active)).fetchInto(PointType.class);
+    }
+
+    @NotNull
+    public List<PointType> searchForActivePointTypes(@NotNull String query) {
+        return duo.selectFrom(POINT_TYPE)
+                .where(POINT_TYPE.POINT_TYPE_TITLE.like("%" + query + "%"))
+                .or(POINT_TYPE.POINT_TYPE_DESCRIPTION.like("%" + query + "%"))
+                .and(POINT_TYPE.POINT_TYPE_STATUS.eq(RequestParameters.POINT_TYPE_status_active))
+                .fetchInto(PointType.class);
+    }
+
+    /**************************
+     * POINT TYPES CATEGORIES
+     **************************/
+
+    @NotNull
+    public List<PointTypeCategory> getAllActivePointTypeCategories() {
+        return duo.selectFrom(POINT_TYPE_CATEGORY).where(POINT_TYPE_CATEGORY.POINT_TYPE_CATEGORY_STATUS.eq(RequestParameters.POINT_TYPE_CATEGORY_status_active)).fetchInto(PointTypeCategory.class);
+    }
+
+    /**************************
+     * POINT TYPES EMOTIONS
+     **************************/
+
+    @NotNull
+    public List<PointEventEmotion> getAllActivePointEventEmotions() {
+        return duo.selectFrom(POINT_EVENT_EMOTION).where(POINT_EVENT_EMOTION.POINT_EVENT_EMOTION_STATUS.eq(RequestParameters.POINT_EVENT_EMOTION_status_active)).fetchInto(PointEventEmotion.class);
     }
 
 

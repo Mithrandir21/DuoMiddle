@@ -187,6 +187,14 @@
                                 <name>TEXT</name> <!-- From CITEXT -->
                                 <expression>content.Pointeventcommentdata.User_Nickname</expression>
                             </forcedType>
+                            <forcedType>
+                                <name>TEXT</name> <!-- From CITEXT -->
+                                <expression>content.point_type.point_type_title</expression>
+                            </forcedType>
+                            <forcedType>
+                                <name>TEXT</name> <!-- From CITEXT -->
+                                <expression>content.point_type.point_type_description</expression>
+                            </forcedType>
                         </forcedTypes>
 
                         </database>

@@ -34,6 +34,7 @@ public class UserService {
     @Autowired
     private PointService pointService;
 
+
     /**********
      * USER
      **********/
@@ -69,6 +70,7 @@ public class UserService {
                 .limit(50)
                 .fetchInto(Userdata.class);
     }
+
 
     /************
      * USER ADR
