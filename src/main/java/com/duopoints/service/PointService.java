@@ -5,6 +5,7 @@ import com.duopoints.db.tables.pojos.*;
 import com.duopoints.db.tables.records.PointRecord;
 import com.duopoints.errorhandling.NoMatchingRowException;
 import com.duopoints.models.composites.CompositePointEvent;
+import com.duopoints.models.composites.CompositePointType;
 import com.duopoints.models.composites.CompositeRelationship;
 import com.duopoints.models.posts.NewPointEvent;
 import org.jooq.impl.DefaultDSLContext;
@@ -189,6 +190,14 @@ public class PointService {
      * POINT TYPES
      *******************/
 
+    @Nullable
+    public PointType getActivePointType(short pointTypeID) {
+        return duo.selectFrom(POINT_TYPE)
+                .where(POINT_TYPE.POINT_TYPE_NUMBER.eq(pointTypeID))
+                .and(POINT_TYPE.POINT_TYPE_STATUS.eq(RequestParameters.POINT_TYPE_status_active))
+                .fetchOneInto(PointType.class);
+    }
+
     @NotNull
     public List<PointType> getAllActivePointTypes() {
         return duo.selectFrom(POINT_TYPE).where(POINT_TYPE.POINT_TYPE_STATUS.eq(RequestParameters.POINT_TYPE_status_active)).fetchInto(PointType.class);
@@ -203,9 +212,45 @@ public class PointService {
                 .fetchInto(PointType.class);
     }
 
+    @NotNull
+    public CompositePointType getActiveCompositePointType(short pointTypeID) {
+        PointType pointType = getActivePointType(pointTypeID);
+
+        if (pointType != null) {
+            return getActiveCompositePointType(pointType);
+        } else {
+            throw new NoMatchingRowException("No PointType found for pointTypeID='" + pointTypeID + "'");
+        }
+    }
+
+    @NotNull
+    public CompositePointType getActiveCompositePointType(@NotNull PointType pointType) {
+        return new CompositePointType(pointType, getActivePointTypeCategory(pointType.getPointTypeCategoryNumber()));
+    }
+
+    @NotNull
+    public List<CompositePointType> searchForActiveCompositePointTypes(@NotNull String query) {
+        List<PointType> types = searchForActivePointTypes(query);
+
+        List<CompositePointType> compositePointTypes = new ArrayList<>();
+
+        for (PointType singlePointType : types) {
+            compositePointTypes.add(getActiveCompositePointType(singlePointType));
+        }
+
+        return compositePointTypes;
+    }
+
     /**************************
      * POINT TYPES CATEGORIES
      **************************/
+
+    public PointTypeCategory getActivePointTypeCategory(short pointTypeCategoryID) {
+        return duo.selectFrom(POINT_TYPE_CATEGORY)
+                .where(POINT_TYPE_CATEGORY.POINT_TYPE_CATEGORY_NUMBER.eq(pointTypeCategoryID))
+                .and(POINT_TYPE_CATEGORY.POINT_TYPE_CATEGORY_STATUS.eq(RequestParameters.POINT_TYPE_CATEGORY_status_active))
+                .fetchOneInto(PointTypeCategory.class);
+    }
 
     @NotNull
     public List<PointTypeCategory> getAllActivePointTypeCategories() {
