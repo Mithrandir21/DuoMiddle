@@ -204,6 +204,14 @@ public class PointService {
     }
 
     @NotNull
+    public List<PointType> getAllActivePointTypesForCategory(short categoryPointID) {
+        return duo.selectFrom(POINT_TYPE)
+                .where(POINT_TYPE.POINT_TYPE_CATEGORY_NUMBER.eq(categoryPointID))
+                .and(POINT_TYPE.POINT_TYPE_STATUS.eq(RequestParameters.POINT_TYPE_status_active))
+                .fetchInto(PointType.class);
+    }
+
+    @NotNull
     public List<PointType> searchForActivePointTypes(@NotNull String query) {
         return duo.selectFrom(POINT_TYPE)
                 .where(POINT_TYPE.POINT_TYPE_TITLE.like("%" + query + "%"))
@@ -230,11 +238,24 @@ public class PointService {
 
     @NotNull
     public List<CompositePointType> searchForActiveCompositePointTypes(@NotNull String query) {
-        List<PointType> types = searchForActivePointTypes(query);
+        List<PointType> pointTypes = searchForActivePointTypes(query);
 
         List<CompositePointType> compositePointTypes = new ArrayList<>();
 
-        for (PointType singlePointType : types) {
+        for (PointType singlePointType : pointTypes) {
+            compositePointTypes.add(getActiveCompositePointType(singlePointType));
+        }
+
+        return compositePointTypes;
+    }
+
+    @NotNull
+    public List<CompositePointType> getActivePointTypeForCategories(short categoryPointID) {
+        List<PointType> pointTypes = getAllActivePointTypesForCategory(categoryPointID);
+
+        List<CompositePointType> compositePointTypes = new ArrayList<>();
+
+        for (PointType singlePointType : pointTypes) {
             compositePointTypes.add(getActiveCompositePointType(singlePointType));
         }
 

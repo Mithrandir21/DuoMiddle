@@ -60,6 +60,11 @@ public class PointController {
         return pointService.searchForActiveCompositePointTypes(query);
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/getActivePointTypeForCategories", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<CompositePointType> getActivePointTypeForCategories(@RequestParam short categoryPointID) {
+        return pointService.getActivePointTypeForCategories(categoryPointID);
+    }
+
 
     /****************************
      * POINT TYPES CATEGORIES
@@ -69,6 +74,11 @@ public class PointController {
     public List<PointTypeCategory> getAllActivePointTypeCategories() {
         return pointService.getAllActivePointTypeCategories();
     }
+
+
+    /****************************
+     * POINT EVENT EMOTION
+     ****************************/
 
     @RequestMapping(method = RequestMethod.GET, value = "/getAllActivePointEventEmotions", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<PointEventEmotion> getAllActivePointEventEmotions() {
