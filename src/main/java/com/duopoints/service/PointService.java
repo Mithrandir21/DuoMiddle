@@ -5,7 +5,6 @@ import com.duopoints.db.tables.pojos.*;
 import com.duopoints.db.tables.records.PointRecord;
 import com.duopoints.errorhandling.NoMatchingRowException;
 import com.duopoints.models.composites.CompositePointEvent;
-import com.duopoints.models.composites.CompositePointType;
 import com.duopoints.models.composites.CompositeRelationship;
 import com.duopoints.models.posts.NewPointEvent;
 import org.jooq.impl.DefaultDSLContext;
@@ -204,62 +203,12 @@ public class PointService {
     }
 
     @NotNull
-    public List<PointType> getAllActivePointTypesForCategory(short categoryPointID) {
-        return duo.selectFrom(POINT_TYPE)
-                .where(POINT_TYPE.POINT_TYPE_CATEGORY_NUMBER.eq(categoryPointID))
-                .and(POINT_TYPE.POINT_TYPE_STATUS.eq(RequestParameters.POINT_TYPE_status_active))
-                .fetchInto(PointType.class);
-    }
-
-    @NotNull
     public List<PointType> searchForActivePointTypes(@NotNull String query) {
         return duo.selectFrom(POINT_TYPE)
                 .where(POINT_TYPE.POINT_TYPE_TITLE.like("%" + query + "%"))
                 .or(POINT_TYPE.POINT_TYPE_DESCRIPTION.like("%" + query + "%"))
                 .and(POINT_TYPE.POINT_TYPE_STATUS.eq(RequestParameters.POINT_TYPE_status_active))
                 .fetchInto(PointType.class);
-    }
-
-    @NotNull
-    public CompositePointType getActiveCompositePointType(short pointTypeID) {
-        PointType pointType = getActivePointType(pointTypeID);
-
-        if (pointType != null) {
-            return getActiveCompositePointType(pointType);
-        } else {
-            throw new NoMatchingRowException("No PointType found for pointTypeID='" + pointTypeID + "'");
-        }
-    }
-
-    @NotNull
-    public CompositePointType getActiveCompositePointType(@NotNull PointType pointType) {
-        return new CompositePointType(pointType, getActivePointTypeCategory(pointType.getPointTypeCategoryNumber()));
-    }
-
-    @NotNull
-    public List<CompositePointType> searchForActiveCompositePointTypes(@NotNull String query) {
-        List<PointType> pointTypes = searchForActivePointTypes(query);
-
-        List<CompositePointType> compositePointTypes = new ArrayList<>();
-
-        for (PointType singlePointType : pointTypes) {
-            compositePointTypes.add(getActiveCompositePointType(singlePointType));
-        }
-
-        return compositePointTypes;
-    }
-
-    @NotNull
-    public List<CompositePointType> getActivePointTypeForCategories(short categoryPointID) {
-        List<PointType> pointTypes = getAllActivePointTypesForCategory(categoryPointID);
-
-        List<CompositePointType> compositePointTypes = new ArrayList<>();
-
-        for (PointType singlePointType : pointTypes) {
-            compositePointTypes.add(getActiveCompositePointType(singlePointType));
-        }
-
-        return compositePointTypes;
     }
 
     /**************************

@@ -5,7 +5,6 @@ import com.duopoints.db.tables.pojos.PointEventEmotion;
 import com.duopoints.db.tables.pojos.PointType;
 import com.duopoints.db.tables.pojos.PointTypeCategory;
 import com.duopoints.models.composites.CompositePointEvent;
-import com.duopoints.models.composites.CompositePointType;
 import com.duopoints.models.posts.NewPointEvent;
 import com.duopoints.service.PointService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,16 +52,6 @@ public class PointController {
     @RequestMapping(method = RequestMethod.GET, value = "/searchForActivePointTypes", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<PointType> searchForActivePointTypes(@RequestParam String query) {
         return pointService.searchForActivePointTypes(query);
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "/searchForActiveCompositePointTypes", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<CompositePointType> searchForActiveCompositePointTypes(@RequestParam String query) {
-        return pointService.searchForActiveCompositePointTypes(query);
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "/getActivePointTypeForCategories", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<CompositePointType> getActivePointTypeForCategories(@RequestParam short categoryPointID) {
-        return pointService.getActivePointTypeForCategories(categoryPointID);
     }
 
 
