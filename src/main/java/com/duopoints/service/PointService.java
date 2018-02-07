@@ -58,8 +58,9 @@ public class PointService {
             points.add(new PointRecord()
                     .value2(newPointEvent.getPointEventUuid())
                     .value3(singlePoint.getPointTypeNumber())
-                    .value4(position)
-                    .value5(singlePoint.getPointComment()));
+                    .value4(singlePoint.getPointTypeCategoryNumber())
+                    .value5(position)
+                    .value6(singlePoint.getPointComment()));
 
             position++;
         }
