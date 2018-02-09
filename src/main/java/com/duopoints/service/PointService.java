@@ -37,7 +37,7 @@ public class PointService {
 
 
     @Transactional
-    public boolean givePoints(@NotNull final NewPointEvent combinedPointEvent) {
+    public CompositePointEvent givePoints(@NotNull final NewPointEvent combinedPointEvent) {
         // First we INSERT the PointEvent, so that the PointEventID exists for Points insertion
         PointEvent newPointEvent = duo.insertInto(POINT_EVENT)
                 .columns(POINT_EVENT.POINT_GIVER_USER_UUID, POINT_EVENT.RELATIONSHIP_UUID, POINT_EVENT.POINT_EVENT_EMOTION_NUMBER,
@@ -67,7 +67,7 @@ public class PointService {
 
         duo.batchInsert(points).execute();
 
-        return true;
+        return getCompositePointEvent(newPointEvent.getPointEventUuid());
     }
 
     @Nullable
