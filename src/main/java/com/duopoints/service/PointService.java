@@ -35,10 +35,13 @@ public class PointService {
     @Autowired
     private RelationshipService relationshipService;
 
+    @Autowired
+    private MediaService mediaService;
+
 
     @Transactional
     public CompositePointEvent givePoints(@NotNull final NewPointEvent combinedPointEvent) {
-        // First we INSERT the PointEvent, so that the PointEventID exists for Points insertion
+        // First we INSERT the PointEvent, so that the PointEventID exists for MediaObjectList and Points insertion
         PointEvent newPointEvent = duo.insertInto(POINT_EVENT)
                 .columns(POINT_EVENT.POINT_GIVER_USER_UUID, POINT_EVENT.RELATIONSHIP_UUID, POINT_EVENT.POINT_EVENT_EMOTION_NUMBER,
                         POINT_EVENT.POINT_EVENT_TITLE, POINT_EVENT.POINT_EVENT_SUBTITLE,
@@ -49,6 +52,16 @@ public class PointService {
                 .returning()
                 .fetchOne()
                 .into(PointEvent.class);
+
+
+        // Now we check if any MediaObjects need to be created (with MediaObjectList)
+        if (combinedPointEvent.getMediaCount() > 0) {
+            for (int i = 1; i <= combinedPointEvent.getMediaCount(); i++) {
+                MediaObject mediaObject = mediaService.createMediaObject("Image " + i, "IMAGE");
+                mediaService.createMediaObjectList(newPointEvent.getPointEventUuid(), null, mediaObject.getMediaObjectUuid());
+            }
+        }
+
 
         List<PointRecord> points = new ArrayList<>();
 
@@ -128,7 +141,7 @@ public class PointService {
     }
 
     public CompositePointEvent getCompositePointEvent(@NotNull PointEvent pointevent, @NotNull List<Pointdata> pointsdata, @NotNull List<Pointeventcommentdata> pointEventComments, @NotNull CompositeRelationship compositeRelationship) {
-        return new CompositePointEvent(pointevent, compositeRelationship, pointsdata, pointEventComments);
+        return new CompositePointEvent(pointevent, compositeRelationship, pointsdata, pointEventComments, mediaService.getPointEventMediaObjects(pointevent.getPointEventUuid()));
     }
 
     public List<CompositePointEvent> getCompositePointEvents(@NotNull UUID relID) {
