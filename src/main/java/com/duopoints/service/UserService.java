@@ -43,7 +43,7 @@ public class UserService {
         UserdataRecord userdataRecord = duo
                 .insertInto(USERDATA,
                         USERDATA.ADR_COUNTRY, USERDATA.ADR_CITY,
-                        USERDATA.USER_AUTH_PROVIDER, USERDATA.USER_AUTH_UUID,
+                        USERDATA.USER_AUTH_PROVIDER, USERDATA.USER_AUTH_ID,
                         USERDATA.USER_EMAIL, USERDATA.USER_FIRSTNAME, USERDATA.USER_LASTNAME, USERDATA.USER_NICKNAME,
                         USERDATA.USER_GENDER, USERDATA.USER_AGE)
                 .values(userReg.country, userReg.city,
@@ -69,6 +69,11 @@ public class UserService {
                 .or(USERDATA.USER_NICKNAME.like("%" + query + "%"))
                 .limit(50)
                 .fetchInto(Userdata.class);
+    }
+
+    @Nullable
+    public Userdata getUserWithAuthID(@NotNull String userAuthID) {
+        return duo.selectFrom(USERDATA).where(USERDATA.USER_AUTH_ID.eq(userAuthID)).fetchOneInto(Userdata.class);
     }
 
 

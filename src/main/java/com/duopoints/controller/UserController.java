@@ -47,6 +47,11 @@ public class UserController {
         return new ResponseEntity<>(Collections.singletonMap("success", userService.updateUserAddress(userAddress)), HttpStatus.OK);
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/getUserWithAuthID", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Userdata getUserWithAuthID(@RequestParam String userAuthID){
+        return userService.getUserWithAuthID(userAuthID);
+    }
+
 
     /************
      * FEED
