@@ -49,7 +49,7 @@ public class UserController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/getUserWithAuthID", produces = MediaType.APPLICATION_JSON_VALUE)
     public Userdata getUserWithAuthID(@RequestParam String userAuthID){
-        return userService.getUserWithAuthID(userAuthID);
+        return Utils.returnOrException(userService.getUserWithAuthID(userAuthID));
     }
 
 
