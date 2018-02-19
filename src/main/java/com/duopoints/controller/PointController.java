@@ -2,6 +2,7 @@ package com.duopoints.controller;
 
 import com.duopoints.Utils;
 import com.duopoints.db.tables.pojos.PointEventEmotion;
+import com.duopoints.db.tables.pojos.PointEventLike;
 import com.duopoints.db.tables.pojos.PointType;
 import com.duopoints.db.tables.pojos.PointTypeCategory;
 import com.duopoints.models.composites.CompositePointEvent;
@@ -69,5 +70,25 @@ public class PointController {
     @RequestMapping(method = RequestMethod.GET, value = "/getAllActivePointEventEmotions", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<PointEventEmotion> getAllActivePointEventEmotions() {
         return pointService.getAllActivePointEventEmotions();
+    }
+
+
+    /*********************
+     * POINT EVENT LIKES
+     *********************/
+
+    @RequestMapping(method = RequestMethod.GET, value = "/likedPointEvents", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UUID> likedPointEvents(@RequestParam UUID userID) {
+        return pointService.likedPointEvents(userID);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/likeEvent", produces = MediaType.APPLICATION_JSON_VALUE)
+    public PointEventLike likeEvent(@RequestParam UUID eventID, @RequestParam UUID userID) {
+        return Utils.returnOrException(pointService.likeEvent(eventID, userID));
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/unlikeEvent", produces = MediaType.APPLICATION_JSON_VALUE)
+    public PointEventLike unlikeEvent(@RequestParam UUID eventID, @RequestParam UUID userID) {
+        return Utils.returnOrException(pointService.unlikeEvent(eventID, userID));
     }
 }

@@ -19,6 +19,7 @@ import java.util.*;
 
 import static com.duopoints.db.tables.PointEvent.POINT_EVENT;
 import static com.duopoints.db.tables.PointEventEmotion.POINT_EVENT_EMOTION;
+import static com.duopoints.db.tables.PointEventLike.POINT_EVENT_LIKE;
 import static com.duopoints.db.tables.PointType.POINT_TYPE;
 import static com.duopoints.db.tables.PointTypeCategory.POINT_TYPE_CATEGORY;
 import static com.duopoints.db.tables.Pointdata.POINTDATA;
@@ -248,6 +249,37 @@ public class PointService {
     @NotNull
     public List<PointEventEmotion> getAllActivePointEventEmotions() {
         return duo.selectFrom(POINT_EVENT_EMOTION).where(POINT_EVENT_EMOTION.POINT_EVENT_EMOTION_STATUS.eq(RequestParameters.POINT_EVENT_EMOTION_status_active)).fetchInto(PointEventEmotion.class);
+    }
+
+
+    /*********************
+     * POINT EVENT LIKES
+     *********************/
+
+    @NotNull
+    public List<UUID> likedPointEvents(@NotNull UUID userID) {
+        return duo.select(POINT_EVENT_LIKE.POINT_EVENT_UUID)
+                .from(POINT_EVENT_LIKE)
+                .where(POINT_EVENT_LIKE.POINT_EVENT_LIKE_USER_UUID.eq(userID))
+                .fetchInto(UUID.class);
+    }
+
+    public PointEventLike likeEvent(@NotNull UUID pointID, @NotNull UUID userID) {
+        return duo.insertInto(POINT_EVENT_LIKE)
+                .columns(POINT_EVENT_LIKE.POINT_EVENT_UUID, POINT_EVENT_LIKE.POINT_EVENT_LIKE_USER_UUID)
+                .values(pointID, userID)
+                .returning()
+                .fetchOne()
+                .into(PointEventLike.class);
+    }
+
+    public PointEventLike unlikeEvent(@NotNull UUID eventID, @NotNull UUID userID) {
+        return duo.deleteFrom(POINT_EVENT_LIKE)
+                .where(POINT_EVENT_LIKE.POINT_EVENT_UUID.eq(eventID))
+                .and(POINT_EVENT_LIKE.POINT_EVENT_LIKE_USER_UUID.eq(userID))
+                .returning()
+                .fetchOne()
+                .into(PointEventLike.class);
     }
 
 
