@@ -34,6 +34,9 @@ public class UserService {
     @Autowired
     private PointService pointService;
 
+    @Autowired
+    private FcmService fcmService;
+
 
     /**********
      * USER
@@ -58,6 +61,8 @@ public class UserService {
 
     @Nullable
     public Userdata getUser(@NotNull UUID userID) {
+        fcmService.send();
+
         return duo.selectFrom(USERDATA).where(USERDATA.USER_UUID.eq(userID)).fetchOneInto(Userdata.class);
     }
 
