@@ -1,10 +1,11 @@
 package com.duopoints.controller;
 
 import com.duopoints.Utils;
-import com.duopoints.models.composites.CompositeFriendshipRequest;
 import com.duopoints.models.composites.CompositeFriendship;
+import com.duopoints.models.composites.CompositeFriendshipRequest;
 import com.duopoints.models.posts.NewFriendshipRequest;
 import com.duopoints.service.FriendService;
+import com.duopoints.service.fcm.FcmService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,9 @@ public class FriendController {
 
     @Autowired
     private FriendService friendService;
+
+    @Autowired
+    private FcmService fcmService;
 
 
     /*****************
@@ -51,7 +55,7 @@ public class FriendController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/createCompositeFriendRequest", produces = MediaType.APPLICATION_JSON_VALUE)
     public CompositeFriendshipRequest createCompositeFriendRequest(@RequestBody NewFriendshipRequest newFriendshipRequest) {
-        return Utils.returnOrException(friendService.createCompositeFriendRequest(newFriendshipRequest));
+        return fcmService.sendFriendRequestNotification(Utils.returnOrException(friendService.createCompositeFriendRequest(newFriendshipRequest)));
     }
 
     @RequestMapping(method = RequestMethod.PATCH, value = "/setFinalCompositeFriendRequestStatus", produces = MediaType.APPLICATION_JSON_VALUE)

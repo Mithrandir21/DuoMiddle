@@ -1,7 +1,6 @@
 package com.duopoints.models.posts;
 
 import com.duopoints.RequestParameters;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class UserReg {

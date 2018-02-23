@@ -7,6 +7,7 @@ import com.duopoints.db.tables.records.UserdataRecord;
 import com.duopoints.errorhandling.NoMatchingRowException;
 import com.duopoints.models.composites.CompositePointEvent;
 import com.duopoints.models.posts.UserReg;
+import com.duopoints.service.fcm.FcmService;
 import org.jooq.impl.DefaultDSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -61,8 +62,6 @@ public class UserService {
 
     @Nullable
     public Userdata getUser(@NotNull UUID userID) {
-        fcmService.send();
-
         return duo.selectFrom(USERDATA).where(USERDATA.USER_UUID.eq(userID)).fetchOneInto(Userdata.class);
     }
 

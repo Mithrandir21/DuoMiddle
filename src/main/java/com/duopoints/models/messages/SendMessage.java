@@ -1,5 +1,6 @@
 package com.duopoints.models.messages;
 
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Map;
@@ -7,11 +8,12 @@ import java.util.Map;
 public class SendMessage {
     private String to;
 
+    private Notification notification;
+
     @SerializedName("collapse_key")
     private String collapseKey;
 
-    @SerializedName("time_to_live")
-    private Integer timeToLive;
+    private Integer ttl;
 
     private Map<String, Object> data;
 
@@ -23,12 +25,20 @@ public class SendMessage {
         this.collapseKey = collapseKey;
     }
 
-    public Integer getTimeToLive() {
-        return this.timeToLive;
+    public Notification getNotification() {
+        return notification;
     }
 
-    public void setTimeToLive(Integer timeToLive) {
-        this.timeToLive = timeToLive;
+    public void setNotification(Notification notification) {
+        this.notification = notification;
+    }
+
+    public Integer getTtl() {
+        return this.ttl;
+    }
+
+    public void setTtl(Integer ttl) {
+        this.ttl = ttl;
     }
 
     public String getTo() {

@@ -8,6 +8,7 @@ import com.duopoints.db.tables.pojos.PointTypeCategory;
 import com.duopoints.models.composites.CompositePointEvent;
 import com.duopoints.models.posts.NewPointEvent;
 import com.duopoints.service.PointService;
+import com.duopoints.service.fcm.FcmService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,10 @@ public class PointController {
     @Autowired
     private PointService pointService;
 
+    @Autowired
+    private FcmService fcmService;
+
+
     @RequestMapping(method = RequestMethod.GET, value = "/getCompositePointsData", produces = MediaType.APPLICATION_JSON_VALUE)
     public CompositePointEvent getCompositePointsData(@RequestParam UUID pointEventID) {
         return Utils.returnOrException(pointService.getCompositePointEvent(pointEventID));
@@ -34,7 +39,8 @@ public class PointController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/givePoints", produces = MediaType.APPLICATION_JSON_VALUE)
     public CompositePointEvent givePoints(@RequestBody NewPointEvent newPointEvent) {
-        return Utils.returnOrException(pointService.givePoints(newPointEvent));
+        // Send Push Notification to User that Received the points
+        return fcmService.sendPointEventPushNotification(Utils.returnOrException(pointService.givePoints(newPointEvent)));
     }
 
 
@@ -84,7 +90,7 @@ public class PointController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/likeEvent", produces = MediaType.APPLICATION_JSON_VALUE)
     public PointEventLike likeEvent(@RequestParam UUID eventID, @RequestParam UUID userID) {
-        return Utils.returnOrException(pointService.likeEvent(eventID, userID));
+        return fcmService.sendLikeNotification(Utils.returnOrException(pointService.likeEvent(eventID, userID)));
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/unlikeEvent", produces = MediaType.APPLICATION_JSON_VALUE)
