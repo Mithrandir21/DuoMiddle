@@ -3,7 +3,7 @@ package com.duopoints.controller;
 import com.duopoints.Utils;
 import com.duopoints.db.tables.pojos.UserAddress;
 import com.duopoints.db.tables.pojos.Userdata;
-import com.duopoints.models.composites.CompositePointEvent;
+import com.duopoints.models.UserFeed;
 import com.duopoints.models.posts.UserReg;
 import com.duopoints.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +58,7 @@ public class UserController {
      ************/
 
     @RequestMapping(method = RequestMethod.GET, value = "/getUserFeed", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<CompositePointEvent> getUserFeed(@RequestParam UUID userID) {
+    public UserFeed getUserFeed(@RequestParam UUID userID) {
         return userService.getUsersFeed(userID);
     }
 }

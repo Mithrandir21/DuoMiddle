@@ -1,33 +1,33 @@
 package com.duopoints.models;
 
-import com.duopoints.db.tables.pojos.UserLevel;
 import com.duopoints.models.composites.CompositePointEvent;
+import com.duopoints.models.composites.CompositeUserLevel;
 
 import java.util.List;
 
 public class UserFeed {
 
-    private List<UserLevel> userLevels;
-    private List<CompositePointEvent> pointEvents;
+    private List<CompositeUserLevel> compositeUserLevels;
+    private List<CompositePointEvent> compositePointEvents;
 
-    public UserFeed(List<UserLevel> userLevels, List<CompositePointEvent> pointEvents) {
-        this.userLevels = userLevels;
-        this.pointEvents = pointEvents;
+    public UserFeed(List<CompositeUserLevel> userLevels, List<CompositePointEvent> pointEvents) {
+        this.compositeUserLevels = userLevels;
+        this.compositePointEvents = pointEvents;
     }
 
-    public List<UserLevel> getUserLevels() {
-        return userLevels;
+    public List<CompositeUserLevel> getCompositeUserLevels() {
+        return compositeUserLevels;
     }
 
-    public void setUserLevels(List<UserLevel> userLevels) {
-        this.userLevels = userLevels;
+    public void setCompositeUserLevels(List<CompositeUserLevel> compositeUserLevels) {
+        this.compositeUserLevels = compositeUserLevels;
     }
 
-    public List<CompositePointEvent> getPointEvents() {
-        return pointEvents;
+    public List<CompositePointEvent> getCompositePointEvents() {
+        return compositePointEvents;
     }
 
-    public void setPointEvents(List<CompositePointEvent> pointEvents) {
-        this.pointEvents = pointEvents;
+    public void setCompositePointEvents(List<CompositePointEvent> compositePointEvents) {
+        this.compositePointEvents = compositePointEvents;
     }
 }

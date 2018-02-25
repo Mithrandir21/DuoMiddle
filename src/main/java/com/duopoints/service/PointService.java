@@ -18,12 +18,12 @@ import javax.validation.constraints.NotNull;
 import java.util.*;
 
 import static com.duopoints.db.tables.PointEvent.POINT_EVENT;
+import static com.duopoints.db.tables.PointEventCommentdata.POINT_EVENT_COMMENTDATA;
 import static com.duopoints.db.tables.PointEventEmotion.POINT_EVENT_EMOTION;
 import static com.duopoints.db.tables.PointEventLike.POINT_EVENT_LIKE;
 import static com.duopoints.db.tables.PointType.POINT_TYPE;
 import static com.duopoints.db.tables.PointTypeCategory.POINT_TYPE_CATEGORY;
 import static com.duopoints.db.tables.Pointdata.POINTDATA;
-import static com.duopoints.db.tables.Pointeventcommentdata.POINTEVENTCOMMENTDATA;
 
 @SuppressWarnings("WeakerAccess")
 @Service
@@ -131,7 +131,7 @@ public class PointService {
     }
 
     @NotNull
-    public CompositePointEvent getCompositePointEvent(@NotNull PointEvent pointevent, @NotNull List<Pointdata> pointsdata, @NotNull List<Pointeventcommentdata> pointEventComments) {
+    public CompositePointEvent getCompositePointEvent(@NotNull PointEvent pointevent, @NotNull List<Pointdata> pointsdata, @NotNull List<PointEventCommentdata> pointEventComments) {
         CompositeRelationship compositeRelationship = relationshipService.getCompositeRelationship(pointevent.getRelationshipUuid());
 
         if (compositeRelationship != null) {
@@ -141,7 +141,7 @@ public class PointService {
         }
     }
 
-    public CompositePointEvent getCompositePointEvent(@NotNull PointEvent pointevent, @NotNull List<Pointdata> pointsdata, @NotNull List<Pointeventcommentdata> pointEventComments, @NotNull CompositeRelationship compositeRelationship) {
+    public CompositePointEvent getCompositePointEvent(@NotNull PointEvent pointevent, @NotNull List<Pointdata> pointsdata, @NotNull List<PointEventCommentdata> pointEventComments, @NotNull CompositeRelationship compositeRelationship) {
         return new CompositePointEvent(pointevent, compositeRelationship, pointsdata, pointEventComments, mediaService.getPointEventMediaObjects(pointevent.getPointEventUuid()));
     }
 
@@ -161,7 +161,6 @@ public class PointService {
             totalEvents.addAll(getCompositePointEvents(relationshipService.getCompositeRelationship(rel)));
         }
 
-        // Reu
         return new ArrayList<>(totalEvents);
     }
 
@@ -298,7 +297,7 @@ public class PointService {
      ******************************/
 
     @NotNull
-    public List<Pointeventcommentdata> getPointEventCommentdata(@NotNull UUID pointEventID) {
-        return duo.selectFrom(POINTEVENTCOMMENTDATA).where(POINTEVENTCOMMENTDATA.POINT_EVENT_UUID.eq(pointEventID)).fetchInto(Pointeventcommentdata.class);
+    public List<PointEventCommentdata> getPointEventCommentdata(@NotNull UUID pointEventID) {
+        return duo.selectFrom(POINT_EVENT_COMMENTDATA).where(POINT_EVENT_COMMENTDATA.POINT_EVENT_UUID.eq(pointEventID)).fetchInto(PointEventCommentdata.class);
     }
 }
