@@ -2,6 +2,8 @@ package com.duopoints.service.fcm;
 
 public class FcmData {
 
+    public static final String NOTIFICATION_TYPE = "notification_type";
+
     // NOTIFICATION TYPES
     public static final String NEW_POINTS_TYPE = "new_points";
     public static final String NEW_LIKE_TYPE = "new_like";
@@ -14,6 +16,7 @@ public class FcmData {
 
     // POINT EVENT fields
     public static final String POINT_EVENT_ID = "event_id";
+    public static final String POINT_EVENT_TITLE = "event_title";
     public static final String POINT_SUM = "total_points";
 
     // FRIEND REQUEST fields

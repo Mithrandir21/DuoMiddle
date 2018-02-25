@@ -8,8 +8,6 @@ import java.util.Map;
 public class SendMessage {
     private String to;
 
-    private Notification notification;
-
     @SerializedName("collapse_key")
     private String collapseKey;
 
@@ -23,14 +21,6 @@ public class SendMessage {
 
     public void setCollapseKey(String collapseKey) {
         this.collapseKey = collapseKey;
-    }
-
-    public Notification getNotification() {
-        return notification;
-    }
-
-    public void setNotification(Notification notification) {
-        this.notification = notification;
     }
 
     public Integer getTtl() {

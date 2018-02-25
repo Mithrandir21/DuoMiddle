@@ -1,4 +1,4 @@
-package com.duopoints.models;
+package com.duopoints.service.fcm;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

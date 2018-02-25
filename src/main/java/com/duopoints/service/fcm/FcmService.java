@@ -3,12 +3,10 @@ package com.duopoints.service.fcm;
 import com.duopoints.db.tables.pojos.PointEventLike;
 import com.duopoints.db.tables.pojos.Relationship;
 import com.duopoints.db.tables.pojos.Userdata;
-import com.duopoints.models.FcmSettings;
 import com.duopoints.models.composites.CompositeFriendshipRequest;
 import com.duopoints.models.composites.CompositePointEvent;
 import com.duopoints.models.composites.CompositeRelationship;
 import com.duopoints.models.composites.CompositeRelationshipRequest;
-import com.duopoints.models.messages.Notification;
 import com.duopoints.models.messages.SendMessage;
 import com.duopoints.service.PointService;
 import com.duopoints.service.RelationshipService;
@@ -58,10 +56,12 @@ public class FcmService {
         for (Userdata user : Arrays.asList(rel.getUserOne(), rel.getUserTwo())) {
             if (!user.getUserUuid().equals(event.getPointGiverUserUuid())) { // Send to the other user in Relationship
                 HashMap<String, Object> messageData = new HashMap<>();
+                messageData.put(FcmData.NOTIFICATION_TYPE, FcmData.NEW_POINTS_TYPE);
                 messageData.put(FcmData.POINT_EVENT_ID, event.getPointEventUuid().toString());
+                messageData.put(FcmData.POINT_EVENT_TITLE, event.getPointEventTitle());
                 messageData.put(FcmData.POINT_SUM, event.getPointEventTotalPoints());
 
-                send(user.getUserAuthId(), new Notification(FcmData.NEW_POINTS_TYPE, event.getPointEventTitle()), messageData);
+                send(user.getUserAuthId(), messageData);
             }
         }
 
@@ -78,24 +78,34 @@ public class FcmService {
 
         // Send to the other user in Relationship
         for (Userdata user : Arrays.asList(likedEvent.getRelationship().getUserOne(), likedEvent.getRelationship().getUserTwo())) {
-            if (!user.getUserUuid().equals(like.getPointEventLikeUserUuid()))
-                send(user.getUserAuthId(), new Notification(FcmData.NEW_LIKE_TYPE, likedEvent.getPointEventTitle()),
-                        Collections.singletonMap(FcmData.POINT_EVENT_ID, likedEvent.getPointEventUuid().toString()));
+            if (!user.getUserUuid().equals(like.getPointEventLikeUserUuid())){
+                HashMap<String, Object> messageData = new HashMap<>();
+                messageData.put(FcmData.NOTIFICATION_TYPE, FcmData.NEW_LIKE_TYPE);
+                messageData.put(FcmData.POINT_EVENT_ID, likedEvent.getPointEventUuid().toString());
+
+                send(user.getUserAuthId(), messageData);
+            }
         }
 
         return like;
     }
 
     public CompositeFriendshipRequest sendFriendRequestNotification(@NotNull CompositeFriendshipRequest request) {
-        send(request.getRecipientUser().getUserAuthId(), new Notification(FcmData.NEW_FRIEND_REQUEST_TYPE, request.getSenderUser().getUserFirstname()),
-                Collections.singletonMap(FcmData.FRIEND_REQUEST_ID, request.getFriendRequestUuid().toString()));
+        HashMap<String, Object> messageData = new HashMap<>();
+        messageData.put(FcmData.NOTIFICATION_TYPE, FcmData.NEW_FRIEND_REQUEST_TYPE);
+        messageData.put(FcmData.FRIEND_REQUEST_ID, request.getFriendRequestUuid().toString());
+
+        send(request.getRecipientUser().getUserAuthId(), messageData);
 
         return request;
     }
 
     public CompositeRelationshipRequest sendRelationshipRequestNotification(@NotNull CompositeRelationshipRequest request) {
-        send(request.getRecipientUser().getUserAuthId(), new Notification(FcmData.NEW_RELATIONSHIP_REQUEST_TYPE, request.getSenderUser().getUserFirstname()),
-                Collections.singletonMap(FcmData.RELATIONSHIP_REQUEST_ID, request.getRelationshipRequestUuid().toString()));
+        HashMap<String, Object> messageData = new HashMap<>();
+        messageData.put(FcmData.NOTIFICATION_TYPE, FcmData.NEW_RELATIONSHIP_REQUEST_TYPE);
+        messageData.put(FcmData.RELATIONSHIP_REQUEST_ID, request.getRelationshipRequestUuid().toString());
+
+        send(request.getRecipientUser().getUserAuthId(), messageData);
 
         return request;
     }
@@ -114,8 +124,11 @@ public class FcmService {
         } else {
             // Send to both users in the Relationship
             for (Userdata user : Arrays.asList(compositeRelationshipRequest.getSenderUser(), compositeRelationshipRequest.getRecipientUser())) {
-                send(user.getUserAuthId(), new Notification(FcmData.NEW_RELATIONSHIP_TYPE, compositeRelationshipRequest.getRelationshipRequestComment()),
-                        Collections.singletonMap(FcmData.NEW_RELATIONSHIP_ID, senderRelationship.getRelationshipUuid().toString()));
+                HashMap<String, Object> messageData = new HashMap<>();
+                messageData.put(FcmData.NOTIFICATION_TYPE, FcmData.NEW_RELATIONSHIP_TYPE);
+                messageData.put(FcmData.NEW_RELATIONSHIP_ID, senderRelationship.getRelationshipUuid().toString());
+
+                send(user.getUserAuthId(), messageData);
             }
         }
 
@@ -123,14 +136,13 @@ public class FcmService {
     }
 
 
-    private void send(@NotNull String userAuthID, @NotNull Notification notification, @NotNull Map<String, Object> data) {
+    private void send(@NotNull String userAuthID, @NotNull Map<String, Object> data) {
         getUserPushTokenRef(userAuthID).addListenerForSingleValueEvent(new ConvenientListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
                     SendMessage sendMessage = new SendMessage();
                     sendMessage.setTo((String) dataSnapshot.getValue());
-                    sendMessage.setNotification(notification);
                     sendMessage.setData(data);
 
                     send(sendMessage);
