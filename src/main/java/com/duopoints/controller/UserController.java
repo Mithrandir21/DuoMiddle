@@ -68,13 +68,13 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/likeLevelUp", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserLevelUpLike likeEvent(@RequestParam UUID eventID, @RequestParam UUID userID) {
-        return Utils.returnOrException(userService.likeLevelUp(eventID, userID));
+    public UserLevelUpLike likeEvent(@RequestParam UUID levelUpID, @RequestParam UUID userID) {
+        return Utils.returnOrException(userService.likeLevelUp(levelUpID, userID));
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/unlikeLevelUp", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserLevelUpLike unlikeEvent(@RequestParam UUID eventID, @RequestParam UUID userID) {
-        return Utils.returnOrException(userService.unlikeLevelUp(eventID, userID));
+    public UserLevelUpLike unlikeEvent(@RequestParam UUID levelUpID, @RequestParam UUID userID) {
+        return Utils.returnOrException(userService.unlikeLevelUp(levelUpID, userID));
     }
 
 

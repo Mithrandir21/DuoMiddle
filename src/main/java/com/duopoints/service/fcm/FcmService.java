@@ -93,6 +93,7 @@ public class FcmService {
         HashMap<String, Object> messageData = new HashMap<>();
         messageData.put(FcmData.NOTIFICATION_TYPE, FcmData.NEW_FRIEND_REQUEST_TYPE);
         messageData.put(FcmData.FRIEND_REQUEST_ID, request.getFriendRequestUuid().toString());
+        messageData.put(FcmData.FRIEND_REQUEST_SENDER_NAME, request.getSenderUser().getUserFirstname());
 
         send(request.getRecipientUser().getUserAuthId(), messageData);
 
@@ -103,6 +104,7 @@ public class FcmService {
         HashMap<String, Object> messageData = new HashMap<>();
         messageData.put(FcmData.NOTIFICATION_TYPE, FcmData.NEW_RELATIONSHIP_REQUEST_TYPE);
         messageData.put(FcmData.RELATIONSHIP_REQUEST_ID, request.getRelationshipRequestUuid().toString());
+        messageData.put(FcmData.RELATIONSHIP_REQUEST_SENDER_NAME, request.getSenderUser().getUserFirstname());
 
         send(request.getRecipientUser().getUserAuthId(), messageData);
 
@@ -126,6 +128,8 @@ public class FcmService {
                 HashMap<String, Object> messageData = new HashMap<>();
                 messageData.put(FcmData.NOTIFICATION_TYPE, FcmData.NEW_RELATIONSHIP_TYPE);
                 messageData.put(FcmData.NEW_RELATIONSHIP_ID, senderRelationship.getRelationshipUuid().toString());
+                messageData.put(FcmData.NEW_RELATIONSHIP_SENDER_NAME, compositeRelationshipRequest.getSenderUser().getUserFirstname());
+
 
                 send(user.getUserAuthId(), messageData);
             }

@@ -21,10 +21,13 @@ public class FcmData {
 
     // FRIEND REQUEST fields
     public static final String FRIEND_REQUEST_ID = "friend_request_id";
+    public static final String FRIEND_REQUEST_SENDER_NAME = "friend_request_sender_name";
 
     // RELATIONSHIP REQUEST fields
-    public static final String RELATIONSHIP_REQUEST_ID = "friend_request_id";
+    public static final String RELATIONSHIP_REQUEST_ID = "relationship_request_id";
+    public static final String RELATIONSHIP_REQUEST_SENDER_NAME = "relationship_request_sender_name";
 
     // NEW RELATIONSHIP fields
     public static final String NEW_RELATIONSHIP_ID = "new_relationship_id";
+    public static final String NEW_RELATIONSHIP_SENDER_NAME = "NEW_RELATIONSHIP_SENDER_NAME";
 }
