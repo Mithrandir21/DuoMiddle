@@ -21,7 +21,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -78,7 +77,7 @@ public class FcmService {
 
         // Send to the other user in Relationship
         for (Userdata user : Arrays.asList(likedEvent.getRelationship().getUserOne(), likedEvent.getRelationship().getUserTwo())) {
-            if (!user.getUserUuid().equals(like.getPointEventLikeUserUuid())){
+            if (!user.getUserUuid().equals(like.getPointEventLikeUserUuid())) {
                 HashMap<String, Object> messageData = new HashMap<>();
                 messageData.put(FcmData.NOTIFICATION_TYPE, FcmData.NEW_LIKE_TYPE);
                 messageData.put(FcmData.POINT_EVENT_ID, likedEvent.getPointEventUuid().toString());

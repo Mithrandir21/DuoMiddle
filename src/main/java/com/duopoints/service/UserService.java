@@ -2,12 +2,12 @@ package com.duopoints.service;
 
 import com.duopoints.db.tables.pojos.UserAddress;
 import com.duopoints.db.tables.pojos.UserLevel;
+import com.duopoints.db.tables.pojos.UserLevelUpLike;
 import com.duopoints.db.tables.pojos.Userdata;
 import com.duopoints.db.tables.records.UserAddressRecord;
 import com.duopoints.db.tables.records.UserdataRecord;
 import com.duopoints.errorhandling.NoMatchingRowException;
 import com.duopoints.models.UserFeed;
-import com.duopoints.models.composites.CompositePointEvent;
 import com.duopoints.models.composites.CompositeUserLevel;
 import com.duopoints.models.posts.UserReg;
 import com.duopoints.service.fcm.FcmService;
@@ -24,6 +24,7 @@ import java.util.UUID;
 
 import static com.duopoints.db.tables.UserAddress.USER_ADDRESS;
 import static com.duopoints.db.tables.UserLevel.USER_LEVEL;
+import static com.duopoints.db.tables.UserLevelUpLike.USER_LEVEL_UP_LIKE;
 import static com.duopoints.db.tables.Userdata.USERDATA;
 import static org.jooq.impl.DSL.row;
 
@@ -147,6 +148,37 @@ public class UserService {
         }
 
         return compositeUserLevels;
+    }
+
+
+    /*********************
+     * LEVEL UP LIKES
+     *********************/
+
+    @NotNull
+    public List<UUID> likedLevelUp(@NotNull UUID userID) {
+        return duo.select(USER_LEVEL_UP_LIKE.USER_LEVEL_UP_UUID)
+                .from(USER_LEVEL_UP_LIKE)
+                .where(USER_LEVEL_UP_LIKE.USER_LEVEL_UP_LIKE_USER_UUID.eq(userID))
+                .fetchInto(UUID.class);
+    }
+
+    public UserLevelUpLike likeLevelUp(@NotNull UUID levelUpID, @NotNull UUID userID) {
+        return duo.insertInto(USER_LEVEL_UP_LIKE)
+                .columns(USER_LEVEL_UP_LIKE.USER_LEVEL_UP_UUID, USER_LEVEL_UP_LIKE.USER_LEVEL_UP_LIKE_USER_UUID)
+                .values(levelUpID, userID)
+                .returning()
+                .fetchOne()
+                .into(UserLevelUpLike.class);
+    }
+
+    public UserLevelUpLike unlikeLevelUp(@NotNull UUID levelUpID, @NotNull UUID userID) {
+        return duo.deleteFrom(USER_LEVEL_UP_LIKE)
+                .where(USER_LEVEL_UP_LIKE.USER_LEVEL_UP_UUID.eq(levelUpID))
+                .and(USER_LEVEL_UP_LIKE.USER_LEVEL_UP_LIKE_USER_UUID.eq(userID))
+                .returning()
+                .fetchOne()
+                .into(UserLevelUpLike.class);
     }
 
 

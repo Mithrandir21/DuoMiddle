@@ -2,10 +2,12 @@ package com.duopoints.controller;
 
 import com.duopoints.Utils;
 import com.duopoints.db.tables.pojos.UserAddress;
+import com.duopoints.db.tables.pojos.UserLevelUpLike;
 import com.duopoints.db.tables.pojos.Userdata;
 import com.duopoints.models.UserFeed;
 import com.duopoints.models.posts.UserReg;
 import com.duopoints.service.UserService;
+import com.duopoints.service.fcm.FcmService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,6 +24,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private FcmService fcmService;
 
     /************
      * USER
@@ -50,6 +55,26 @@ public class UserController {
     @RequestMapping(method = RequestMethod.GET, value = "/getUserWithAuthID", produces = MediaType.APPLICATION_JSON_VALUE)
     public Userdata getUserWithAuthID(@RequestParam String userAuthID) {
         return Utils.returnOrException(userService.getUserWithAuthID(userAuthID));
+    }
+
+
+    /*********************
+     * LEVEL UP LIKES
+     *********************/
+
+    @RequestMapping(method = RequestMethod.GET, value = "/likedLevelUp", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UUID> likedPointEvents(@RequestParam UUID userID) {
+        return userService.likedLevelUp(userID);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/likeLevelUp", produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserLevelUpLike likeEvent(@RequestParam UUID eventID, @RequestParam UUID userID) {
+        return Utils.returnOrException(userService.likeLevelUp(eventID, userID));
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/unlikeLevelUp", produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserLevelUpLike unlikeEvent(@RequestParam UUID eventID, @RequestParam UUID userID) {
+        return Utils.returnOrException(userService.unlikeLevelUp(eventID, userID));
     }
 
 
