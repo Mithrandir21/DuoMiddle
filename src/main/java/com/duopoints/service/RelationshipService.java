@@ -230,6 +230,15 @@ public class RelationshipService {
             throw new ConflictException("RelationshipRequest has status:'" + relationshipRequest.getRelationshipRequestStatus() + "'");
         }
 
+        // Now set the Status of the Request
+        RelationshipRequestRecord relationshipRequestRecord = duo.update(RELATIONSHIP_REQUEST)
+                .set(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_STATUS, status)
+                .where(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_UUID.eq(requestID))
+                .and(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_STATUS.eq(RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_requested))
+                .returning()
+                .fetchOne();
+
+
         // If the status is ACCEPTED, we must first create a new Relationship
         if (status.equalsIgnoreCase(RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_accepted)) {
             if (createRelationship(relationshipRequest.getRelationshipRequestSenderUserUuid(),
@@ -238,16 +247,15 @@ public class RelationshipService {
                     relationshipRequest.getRelationshipRequestRelIsSecret()) == null) {
                 throw new NoMatchingRowException("No Relationship created! Error!");
             }
+
+            // And cancel and reject all other Requests
+            duo.update(RELATIONSHIP_REQUEST)
+                    .set(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_STATUS, RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_cancelled)
+                    .where(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_STATUS.eq(RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_requested))
+                    .returning()
+                    .fetchOne();
         }
 
-
-        // Now set the Status of the Request
-        RelationshipRequestRecord relationshipRequestRecord = duo.update(RELATIONSHIP_REQUEST)
-                .set(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_STATUS, status)
-                .where(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_UUID.eq(requestID))
-                .and(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_STATUS.eq(RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_requested))
-                .returning()
-                .fetchOne();
 
         if (relationshipRequestRecord != null) {
             return getCompositeRelationshipRequest(relationshipRequestRecord.getRelationshipRequestUuid());

@@ -72,9 +72,9 @@ public class RelationshipController {
         if (finalStatus.equals(RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_accepted)
                 && compositeRelationshipRequest.getRelationshipRequestStatus().equals(RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_accepted)) {
             return fcmService.sendNewRelationshipNotification(compositeRelationshipRequest);
+        } else {
+            return fcmService.sendRelationshipRequestNegativeNotification(compositeRelationshipRequest);
         }
-
-        return compositeRelationshipRequest;
     }
 
 

@@ -138,6 +138,18 @@ public class FcmService {
         return compositeRelationshipRequest;
     }
 
+    public CompositeRelationshipRequest sendRelationshipRequestNegativeNotification(CompositeRelationshipRequest compositeRelationshipRequest) {
+        // Send to both users in the Request
+        for (Userdata user : Arrays.asList(compositeRelationshipRequest.getSenderUser(), compositeRelationshipRequest.getRecipientUser())) {
+            HashMap<String, Object> messageData = new HashMap<>();
+            messageData.put(FcmData.NOTIFICATION_TYPE, FcmData.RELATIONSHIP_REQUEST_UPDATED_TYPE);
+
+            send(user.getUserAuthId(), messageData);
+        }
+
+        return compositeRelationshipRequest;
+    }
+
 
     private void send(@NotNull String userAuthID, @NotNull Map<String, Object> data) {
         getUserPushTokenRef(userAuthID).addListenerForSingleValueEvent(new ConvenientListener() {
