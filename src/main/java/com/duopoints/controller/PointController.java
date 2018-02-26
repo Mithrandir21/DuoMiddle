@@ -88,12 +88,12 @@ public class PointController {
         return pointService.likedPointEvents(userID);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/likeEvent", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.GET, value = "/likePointEvent", produces = MediaType.APPLICATION_JSON_VALUE)
     public PointEventLike likeEvent(@RequestParam UUID eventID, @RequestParam UUID userID) {
         return fcmService.sendLikeNotification(Utils.returnOrException(pointService.likeEvent(eventID, userID)));
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/unlikeEvent", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.GET, value = "/unlikePointEvent", produces = MediaType.APPLICATION_JSON_VALUE)
     public PointEventLike unlikeEvent(@RequestParam UUID eventID, @RequestParam UUID userID) {
         return Utils.returnOrException(pointService.unlikeEvent(eventID, userID));
     }
