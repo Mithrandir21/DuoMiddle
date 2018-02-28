@@ -294,7 +294,7 @@ public class RelationshipService {
 
     public CompositeRelationshipBreakupRequest requestCompositeRelationshipBreakup(@NotNull NewRelationshipBreakupRequest newBreakupRequest) {
         // First check if any other Breakup requests exist for the RelationshipID with status as PROCESSING
-        if (getActiveCompositeRelationshipBreakup(newBreakupRequest.relID) != null) {
+        if (getActiveRelationshipBreakup(newBreakupRequest.relID) != null) {
             throw new ConflictException("Relationship already has a requested breakup");
         }
 
