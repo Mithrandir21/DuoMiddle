@@ -270,6 +270,13 @@ public class RelationshipService {
      ************************/
 
     @Nullable
+    public RelationshipBreakupRequest getRelationshipBreakup(@NotNull UUID requestID) {
+        return duo.selectFrom(RELATIONSHIP_BREAKUP_REQUEST)
+                .where(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_UUID.eq(requestID))
+                .fetchOneInto(RelationshipBreakupRequest.class);
+    }
+
+    @Nullable
     public RelationshipBreakupRequest getActiveRelationshipBreakup(@NotNull UUID relationshipID) {
         return duo.selectFrom(RELATIONSHIP_BREAKUP_REQUEST)
                 .where(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_UUID.eq(relationshipID))
@@ -278,53 +285,67 @@ public class RelationshipService {
     }
 
     @NotNull
+    public CompositeRelationshipBreakupRequest getCompositeRelationshipBreakup(@NotNull UUID requestID) {
+        RelationshipBreakupRequest relationshipBreakup = getRelationshipBreakup(requestID);
+
+        if (relationshipBreakup != null) {
+            return getCompositeRelationshipBreakup(relationshipBreakup);
+        } else {
+            throw new NoMatchingRowException("No RelationshipBreakupRequest found for requestID='" + requestID + "'");
+        }
+    }
+
+    @NotNull
     public CompositeRelationshipBreakupRequest getActiveCompositeRelationshipBreakup(@NotNull UUID relationshipID) {
         RelationshipBreakupRequest activeRelationshipBreakup = getActiveRelationshipBreakup(relationshipID);
 
         if (activeRelationshipBreakup != null) {
-            return getActiveCompositeRelationshipBreakup(activeRelationshipBreakup);
+            return getCompositeRelationshipBreakup(activeRelationshipBreakup);
         } else {
             throw new NoMatchingRowException("No RelationshipBreakupRequest found for relationshipID='" + relationshipID + "'");
         }
     }
 
-    public CompositeRelationshipBreakupRequest getActiveCompositeRelationshipBreakup(@NotNull RelationshipBreakupRequest req) {
+
+    public CompositeRelationshipBreakupRequest getCompositeRelationshipBreakup(@NotNull RelationshipBreakupRequest req) {
         return new CompositeRelationshipBreakupRequest(req, getCompositeRelationship(req.getRelationshipUuid()), userService.getUser(req.getUserUuid()));
     }
 
     public CompositeRelationshipBreakupRequest requestCompositeRelationshipBreakup(@NotNull NewRelationshipBreakupRequest newBreakupRequest) {
         // First check if any other Breakup requests exist for the RelationshipID with status as PROCESSING
-        if (getActiveRelationshipBreakup(newBreakupRequest.relID) != null) {
+        if (getActiveRelationshipBreakup(newBreakupRequest.relationshipUUID) != null) {
             throw new ConflictException("Relationship already has a requested breakup");
         }
 
         RelationshipBreakupRequest request = duo.insertInto(RELATIONSHIP_BREAKUP_REQUEST)
                 .columns(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_UUID, RELATIONSHIP_BREAKUP_REQUEST.USER_UUID, RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_COMMENT, RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_STATUS)
-                .values(newBreakupRequest.relID, newBreakupRequest.requestingUserID, newBreakupRequest.comment, RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_status_processing)
+                .values(newBreakupRequest.relationshipUUID, newBreakupRequest.requestingUserUUID, newBreakupRequest.requestComment, RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_status_processing)
                 .returning()
                 .fetchOne()
                 .into(RelationshipBreakupRequest.class);
 
-        return getActiveCompositeRelationshipBreakup(request);
+        return getCompositeRelationshipBreakup(request);
     }
 
     @Transactional
     public CompositeRelationshipBreakupRequest setFinalRelationshipBreakupRequestStatus(@NotNull UUID requestID, @NotNull String status) {
         // First we retrieve the Request
-        RelationshipBreakupRequest relbreakupRequest = duo.selectFrom(RELATIONSHIP_BREAKUP_REQUEST).where(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_UUID.eq(requestID)).fetchOneInto(RelationshipBreakupRequest.class);
+        RelationshipBreakupRequest breakupRequest = duo.selectFrom(RELATIONSHIP_BREAKUP_REQUEST)
+                .where(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_UUID.eq(requestID))
+                .fetchOneInto(RelationshipBreakupRequest.class);
 
-        if (relbreakupRequest == null) {
+        if (breakupRequest == null) {
             throw new NoMatchingRowException("No RelbreakupRequest found matching requestID='" + requestID + "'");
         }
 
         // If the Request is anything other than REQUESTED, fail.
-        if (!relbreakupRequest.getRelationshipBreakupRequestStatus().equalsIgnoreCase(RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_status_processing)) {
-            throw new ConflictException("RelbreakupRequest has status:'" + relbreakupRequest.getRelationshipBreakupRequestStatus() + "'");
+        if (!breakupRequest.getRelationshipBreakupRequestStatus().equalsIgnoreCase(RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_status_processing)) {
+            throw new ConflictException("RelbreakupRequest has status:'" + breakupRequest.getRelationshipBreakupRequestStatus() + "'");
         }
 
         // If the Status is COMPLETED, we must first set the Status of the Relationship to ENDED
         if (status.equalsIgnoreCase(RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_status_completed)) {
-            if (setRelationshipStatus(relbreakupRequest.getRelationshipUuid(), RequestParameters.RELATIONSHIP_status_ended) == null) {
+            if (setRelationshipStatus(breakupRequest.getRelationshipUuid(), RequestParameters.RELATIONSHIP_status_ended) == null) {
                 throw new NoMatchingRowException("No Relationship found! Error!");
             }
         }
@@ -338,7 +359,7 @@ public class RelationshipService {
                 .fetchOne();
 
         if (relbreakupRequestRecord != null) {
-            return getActiveCompositeRelationshipBreakup(relbreakupRequestRecord.getRelationshipUuid());
+            return getCompositeRelationshipBreakup(relbreakupRequestRecord.getRelationshipBreakupRequestUuid());
         } else {
             throw new NoMatchingRowException("No RelationshipBreakupRequest found matching requestID='" + requestID + "' having status " + RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_status_processing);
         }

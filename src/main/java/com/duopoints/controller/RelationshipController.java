@@ -2,6 +2,7 @@ package com.duopoints.controller;
 
 import com.duopoints.RequestParameters;
 import com.duopoints.Utils;
+import com.duopoints.db.tables.pojos.RelationshipBreakupRequest;
 import com.duopoints.models.FullRelationshipData;
 import com.duopoints.models.composites.CompositeRelationship;
 import com.duopoints.models.composites.CompositeRelationshipBreakupRequest;
@@ -93,7 +94,7 @@ public class RelationshipController {
     }
 
     @RequestMapping(method = RequestMethod.PATCH, value = "/setFinalCompositeRelationshipBreakupRequestStatus", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CompositeRelationshipBreakupRequest setFinalCompositeRelationshipBreakupRequestStatus(@RequestParam UUID requestID, @RequestParam String finalStatus) {
+    public RelationshipBreakupRequest setFinalCompositeRelationshipBreakupRequestStatus(@RequestParam UUID requestID, @RequestParam String finalStatus) {
         return relationshipService.setFinalRelationshipBreakupRequestStatus(requestID, finalStatus);
     }
 }

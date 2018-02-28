@@ -1,58 +1,52 @@
 package com.duopoints.models.posts;
 
-import com.duopoints.RequestParameters;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.UUID;
 
 public class NewRelationshipBreakupRequest {
 
-    @JsonProperty(RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_requesting_user_uuid)
-    public UUID requestingUserID;
+    public UUID requestingUserUUID;
+    public UUID relationshipUUID;
+    public String requestComment;
 
-    @JsonProperty(RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_relationship_uuid)
-    public UUID relID;
+    public NewRelationshipBreakupRequest() {
+        super();
+    }
 
-    @JsonProperty(RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_comment)
-    public String comment;
-
+    public NewRelationshipBreakupRequest(UUID requestingUserUUID, UUID relationshipUUID, String requestComment) {
+        this.requestingUserUUID = requestingUserUUID;
+        this.relationshipUUID = relationshipUUID;
+        this.requestComment = requestComment;
+    }
 
     /************
      * GETTERS
      ************/
 
-    @JsonProperty(RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_requesting_user_uuid)
-    public UUID getRequestingUserID() {
-        return requestingUserID;
+    public UUID getRequestingUserUUID() {
+        return requestingUserUUID;
     }
 
-    @JsonProperty(RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_relationship_uuid)
-    public UUID getRelID() {
-        return relID;
+    public UUID getRelationshipUUID() {
+        return relationshipUUID;
     }
 
-    @JsonProperty(RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_comment)
-    public String getComment() {
-        return comment;
+    public String getRequestComment() {
+        return requestComment;
     }
 
 
     /************
      * SETTERS
      ************/
-
-    @JsonProperty(RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_requesting_user_uuid)
-    public void setRequestingUserID(UUID requestingUserID) {
-        this.requestingUserID = requestingUserID;
+    public void setRequestingUserUUID(UUID requestingUserUUID) {
+        this.requestingUserUUID = requestingUserUUID;
     }
 
-    @JsonProperty(RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_relationship_uuid)
-    public void setRelID(UUID relID) {
-        this.relID = relID;
+    public void setRelationshipUUID(UUID relationshipUUID) {
+        this.relationshipUUID = relationshipUUID;
     }
 
-    @JsonProperty(RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_comment)
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setRequestComment(String requestComment) {
+        this.requestComment = requestComment;
     }
 }
