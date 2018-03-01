@@ -32,4 +32,7 @@ public class FcmData {
     // NEW RELATIONSHIP fields
     public static final String NEW_RELATIONSHIP_ID = "new_relationship_id";
     public static final String NEW_RELATIONSHIP_SENDER_NAME = "NEW_RELATIONSHIP_SENDER_NAME";
+
+    // RELATIONSHIP BREAKUP fields
+    public static final String BREAKUP_STATUS = "breakup_status";
 }

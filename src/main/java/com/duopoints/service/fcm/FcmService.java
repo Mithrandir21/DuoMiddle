@@ -152,6 +152,7 @@ public class FcmService {
         for (Userdata user : Arrays.asList(compositeRelationshipBreakupRequest.getRelationship().getUserOne(), compositeRelationshipBreakupRequest.getRelationship().getUserTwo())) {
             HashMap<String, Object> messageData = new HashMap<>();
             messageData.put(FcmData.NOTIFICATION_TYPE, FcmData.RELATIONSHIP_BREAKUP_TYPE);
+            messageData.put(FcmData.BREAKUP_STATUS, compositeRelationshipBreakupRequest.getRelationshipBreakupRequestStatus());
 
             send(user.getUserAuthId(), messageData);
         }
