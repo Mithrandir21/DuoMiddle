@@ -13,6 +13,7 @@ public class FcmData {
     public static final String NEW_FOLLOWER_TYPE = "new_follower";
     public static final String NEW_RELATIONSHIP_TYPE = "new_relationship";
     public static final String RELATIONSHIP_REQUEST_UPDATED_TYPE = "relationship_request_updated_type";
+    public static final String RELATIONSHIP_BREAKUP_TYPE = "relationship_breakup_type";
 
 
     // POINT EVENT fields

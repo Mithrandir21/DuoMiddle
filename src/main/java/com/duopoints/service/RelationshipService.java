@@ -24,6 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -317,9 +321,12 @@ public class RelationshipService {
             throw new ConflictException("Relationship already has a requested breakup");
         }
 
+
+        Timestamp waitUntil = Timestamp.from(ZonedDateTime.now(ZoneId.of("UTC")).plus(2, ChronoUnit.DAYS).toInstant());
+
         RelationshipBreakupRequest request = duo.insertInto(RELATIONSHIP_BREAKUP_REQUEST)
-                .columns(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_UUID, RELATIONSHIP_BREAKUP_REQUEST.USER_UUID, RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_COMMENT, RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_STATUS)
-                .values(newBreakupRequest.relationshipUUID, newBreakupRequest.requestingUserUUID, newBreakupRequest.requestComment, RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_status_processing)
+                .columns(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_UUID, RELATIONSHIP_BREAKUP_REQUEST.USER_UUID, RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_COMMENT, RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_STATUS, RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_WAIT_UNTIL)
+                .values(newBreakupRequest.relationshipUUID, newBreakupRequest.requestingUserUUID, newBreakupRequest.requestComment, RequestParameters.REL_BREAKUP_REQUEST_rel_breakup_request_status_processing, waitUntil)
                 .returning()
                 .fetchOne()
                 .into(RelationshipBreakupRequest.class);

@@ -3,10 +3,7 @@ package com.duopoints.service.fcm;
 import com.duopoints.db.tables.pojos.PointEventLike;
 import com.duopoints.db.tables.pojos.Relationship;
 import com.duopoints.db.tables.pojos.Userdata;
-import com.duopoints.models.composites.CompositeFriendshipRequest;
-import com.duopoints.models.composites.CompositePointEvent;
-import com.duopoints.models.composites.CompositeRelationship;
-import com.duopoints.models.composites.CompositeRelationshipRequest;
+import com.duopoints.models.composites.*;
 import com.duopoints.models.messages.SendMessage;
 import com.duopoints.service.PointService;
 import com.duopoints.service.RelationshipService;
@@ -148,6 +145,18 @@ public class FcmService {
         }
 
         return compositeRelationshipRequest;
+    }
+
+    public CompositeRelationshipBreakupRequest sendRelationshipBreakupUpdate(CompositeRelationshipBreakupRequest compositeRelationshipBreakupRequest) {
+        // Send to both users in the Request
+        for (Userdata user : Arrays.asList(compositeRelationshipBreakupRequest.getRelationship().getUserOne(), compositeRelationshipBreakupRequest.getRelationship().getUserTwo())) {
+            HashMap<String, Object> messageData = new HashMap<>();
+            messageData.put(FcmData.NOTIFICATION_TYPE, FcmData.RELATIONSHIP_BREAKUP_TYPE);
+
+            send(user.getUserAuthId(), messageData);
+        }
+
+        return compositeRelationshipBreakupRequest;
     }
 
 
