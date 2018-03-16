@@ -152,9 +152,9 @@
                 <configuration>
                     <jdbc>
                         <driver>org.postgresql.Driver</driver>
-                        <url>jdbc:{SPRING_DATASOURCE_URL}</url>
-                        <user>{SPRING_DATASOURCE_USERNAME}</user>
-                        <password>{SPRING_DATASOURCE_PASSWORD}</password>
+                        <url>jdbc:{systemEnvironment['SPRING_DATASOURCE_URL']}</url>
+                        <user>{systemEnvironment['SPRING_DATASOURCE_USERNAME']}</user>
+                        <password>{systemEnvironment['SPRING_DATASOURCE_PASSWORD']}</password>
                     </jdbc>
 
                     <generator>
