@@ -128,7 +128,12 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <echo>DATABASE_URL = '-${env.DATABASE_URL}-'</echo>
+                                <echo>DATABASE_URL1 = '-${env.DATABASE_URL}-'</echo>
+                                <echo>DATABASE_URL2 = '-${DATABASE_URL}-'</echo>
+                                <echo>JDBC_DATABASE_URL1 = '-${env.JDBC_DATABASE_URL}-'</echo>
+                                <echo>JDBC_DATABASE_URL2 = '-${JDBC_DATABASE_URL}-'</echo>
+                                <echo>SPRING_DATASOURCE_USERNAME = '-${env.SPRING_DATASOURCE_USERNAME}-'</echo>
+                                <echo>SPRING_DATASOURCE_PASSWORD = '-${env.SPRING_DATASOURCE_PASSWORD}-'</echo>
                             </tasks>
                         </configuration>
                     </execution>
