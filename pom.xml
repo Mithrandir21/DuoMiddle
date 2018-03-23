@@ -128,7 +128,7 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <echo>DATABASE_URL = '-{env.DATABASE_URL}-'</echo>
+                                <echo>DATABASE_URL = '-${env.DATABASE_URL}-'</echo>
                             </tasks>
                         </configuration>
                     </execution>
