@@ -173,7 +173,7 @@
                 <configuration>
                     <jdbc>
                         <driver>org.postgresql.Driver</driver>
-                        <url>jdbc:${JDBC_DATABASE_URL}</url>
+                        <url>${JDBC_DATABASE_URL}</url>
                         <user>${SPRING_DATASOURCE_USERNAME}</user>
                         <password>${SPRING_DATASOURCE_PASSWORD}</password>
                     </jdbc>
