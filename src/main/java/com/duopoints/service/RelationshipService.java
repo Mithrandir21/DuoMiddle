@@ -194,10 +194,10 @@ public class RelationshipService {
         // Check if a request exists with similar data
         Condition sameRecipientID = RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_SENDER_USER_UUID.eq(request.senderUserID).or(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_SENDER_USER_UUID.eq(request.senderUserID));
         Condition sameRecipientEmail = RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_SENDER_USER_UUID.eq(request.senderUserID).or(RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_RECIPIENT_USER_EMAIL.eq(request.recipientUserEmail));
-        Condition statusNotAcceptedOrRejected = RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_STATUS.notIn(Arrays.asList(RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_accepted, RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_rejected));
+        Condition statusIsRequested = RELATIONSHIP_REQUEST.RELATIONSHIP_REQUEST_STATUS.in(Arrays.asList(RequestParameters.RELATIONSHIP_REQUEST_rel_request_status_requested));
 
-        if (duo.selectFrom(RELATIONSHIP_REQUEST).where(sameRecipientID).or(sameRecipientEmail).and(statusNotAcceptedOrRejected).fetch().size() > 0) {
-            throw new ConflictException("A request already exists that is not Accepted or Rejected");
+        if (duo.selectFrom(RELATIONSHIP_REQUEST).where(sameRecipientID).or(sameRecipientEmail).and(statusIsRequested).fetch().size() > 0) {
+            throw new ConflictException("A request already exists that is Requested");
         }
 
         // At this point no request exists between the sender and recipient that is not in accepted or rejected state
