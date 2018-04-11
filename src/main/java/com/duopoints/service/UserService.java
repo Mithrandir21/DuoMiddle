@@ -8,9 +8,12 @@ import com.duopoints.db.tables.records.UserAddressRecord;
 import com.duopoints.db.tables.records.UserdataRecord;
 import com.duopoints.errorhandling.NoMatchingRowException;
 import com.duopoints.models.UserFeed;
+import com.duopoints.models.auth.UserAuthInfo;
+import com.duopoints.models.auth.UserAuthWrapper;
 import com.duopoints.models.composites.CompositeUserLevel;
 import com.duopoints.models.posts.UserReg;
 import com.duopoints.service.fcm.FcmService;
+import com.google.firebase.auth.FirebaseToken;
 import org.jooq.impl.DefaultDSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,6 +46,22 @@ public class UserService {
 
     @Autowired
     private FcmService fcmService;
+
+
+    /**********
+     * AUTH
+     **********/
+
+    public String authUserJWT(@NotNull UserAuthWrapper wrapper) {
+        // Decrypt and map the encrypted wrapped UserAuthInfo
+        UserAuthInfo userAuthInfo = fcmService.UserAuthInfo(wrapper);
+
+        // Verify the accessToken for the specified User
+        FirebaseToken firebaseToken = fcmService.verifyToken(userAuthInfo.getAccessToken());
+
+        // Create a signed and encrypted JWT claim, to be used
+        return fcmService.createUserJWT(firebaseToken, userAuthInfo.getUserUid(), userAuthInfo.getUserEmail());
+    }
 
 
     /**********

@@ -5,6 +5,9 @@ import com.duopoints.db.tables.pojos.UserAddress;
 import com.duopoints.db.tables.pojos.UserLevelUpLike;
 import com.duopoints.db.tables.pojos.Userdata;
 import com.duopoints.models.UserFeed;
+import com.duopoints.models.auth.UserAuthInfo;
+import com.duopoints.models.auth.UserAuthWrapper;
+import com.duopoints.models.auth.UserAuthenticatedResponse;
 import com.duopoints.models.posts.UserReg;
 import com.duopoints.service.UserService;
 import com.duopoints.service.fcm.FcmService;
@@ -27,6 +30,17 @@ public class UserController {
 
     @Autowired
     private FcmService fcmService;
+
+
+    /************
+     * AUTH
+     ************/
+
+    @RequestMapping(method = RequestMethod.POST, value = "/authUser")
+    public UserAuthenticatedResponse authUser(@RequestBody UserAuthWrapper wrapper) {
+        return new UserAuthenticatedResponse(userService.authUserJWT(wrapper));
+    }
+
 
     /************
      * USER
