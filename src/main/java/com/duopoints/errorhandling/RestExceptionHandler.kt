@@ -29,5 +29,5 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(PSQLException::class)
     protected fun handlePSQLException(ex: PSQLException): ResponseEntity<*> =
-            ResponseEntity<Map<String, ServerErrorMessage>>(Collections.singletonMap("error_cause", ex.serverErrorMessage), HttpStatus.INTERNAL_SERVER_ERROR)
+            ResponseEntity(Collections.singletonMap("error_cause", ex.serverErrorMessage), HttpStatus.INTERNAL_SERVER_ERROR)
 }

@@ -7,9 +7,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <kotlin.version>1.2.71</kotlin.version>
-        <rxjava.version>2.1.8</rxjava.version>
-        <jooq.version>3.10.2</jooq.version>
+        <kotlin.version>1.3.72</kotlin.version>
+        <rxjava.version>2.2.19</rxjava.version>
+        <jooq.version>3.13.4</jooq.version>
     </properties>
 
     <parent>
@@ -85,7 +85,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.4.1212</version>
+            <version>42.2.15</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -181,7 +181,7 @@
                     <dependency>
                         <groupId>org.postgresql</groupId>
                         <artifactId>postgresql</artifactId>
-                        <version>9.4.1212</version>
+                        <version>42.2.15</version>
                     </dependency>
                 </dependencies>
 
@@ -189,6 +189,7 @@
                 <configuration>
                     <jdbc>
                         <driver>org.postgresql.Driver</driver>
+                        <!-- <url>jdbc:postgresql://[HOST]:[PORT]/[DB_NAME]?sslmode=require</url> -->
                         <url>${JDBC_DATABASE_URL}</url>
                         <user>${SPRING_DATASOURCE_USERNAME}</user>
                         <password>${SPRING_DATASOURCE_PASSWORD}</password>
@@ -196,7 +197,7 @@
 
                     <generator>
                         <database>
-                            <name>org.jooq.util.postgres.PostgresDatabase</name>
+                            <name>org.jooq.meta.postgres.PostgresDatabase</name>
                             <includes>.*</includes>
                             <excludes>
                                 user_signup_function
@@ -212,55 +213,79 @@
                         <forcedTypes>
                             <forcedType>
                                 <name>TEXT</name> <!-- From CITEXT -->
-                                <expression>content.user_info.User_Firstname</expression>
+                                <includeExpression>content.user_info.User_Firstname</includeExpression>
+                                <nullability>ALL</nullability>
+                                <objectType>ALL</objectType>
                             </forcedType>
                             <forcedType>
                                 <name>TEXT</name> <!-- From CITEXT -->
-                                <expression>content.user_info.User_Lastname</expression>
+                                <includeExpression>content.user_info.User_Lastname</includeExpression>
+                                <nullability>ALL</nullability>
+                                <objectType>ALL</objectType>
                             </forcedType>
                             <forcedType>
                                 <name>TEXT</name> <!-- From CITEXT -->
-                                <expression>content.user_info.User_Nickname</expression>
+                                <includeExpression>content.user_info.User_Nickname</includeExpression>
+                                <nullability>ALL</nullability>
+                                <objectType>ALL</objectType>
                             </forcedType>
                             <forcedType>
                                 <name>TEXT</name> <!-- From CITEXT -->
-                                <expression>content.userdata.User_Firstname</expression>
+                                <includeExpression>content.userdata.User_Firstname</includeExpression>
+                                <nullability>ALL</nullability>
+                                <objectType>ALL</objectType>
                             </forcedType>
                             <forcedType>
                                 <name>TEXT</name> <!-- From CITEXT -->
-                                <expression>content.userdata.User_Lastname</expression>
+                                <includeExpression>content.userdata.User_Lastname</includeExpression>
+                                <nullability>ALL</nullability>
+                                <objectType>ALL</objectType>
                             </forcedType>
                             <forcedType>
                                 <name>TEXT</name> <!-- From CITEXT -->
-                                <expression>content.userdata.User_Nickname</expression>
+                                <includeExpression>content.userdata.User_Nickname</includeExpression>
                             </forcedType>
                             <forcedType>
                                 <name>TEXT</name> <!-- From CITEXT -->
-                                <expression>content.Pointeventcommentdata.User_Firstname</expression>
+                                <includeExpression>content.Pointeventcommentdata.User_Firstname</includeExpression>
+                                <nullability>ALL</nullability>
+                                <objectType>ALL</objectType>
                             </forcedType>
                             <forcedType>
                                 <name>TEXT</name> <!-- From CITEXT -->
-                                <expression>content.Pointeventcommentdata.User_Lastname</expression>
+                                <includeExpression>content.Pointeventcommentdata.User_Lastname</includeExpression>
+                                <nullability>ALL</nullability>
+                                <objectType>ALL</objectType>
                             </forcedType>
                             <forcedType>
                                 <name>TEXT</name> <!-- From CITEXT -->
-                                <expression>content.Pointeventcommentdata.User_Nickname</expression>
+                                <includeExpression>content.Pointeventcommentdata.User_Nickname</includeExpression>
+                                <nullability>ALL</nullability>
+                                <objectType>ALL</objectType>
                             </forcedType>
                             <forcedType>
                                 <name>TEXT</name> <!-- From CITEXT -->
-                                <expression>content.point_type.point_type_title</expression>
+                                <includeExpression>content.point_type.point_type_title</includeExpression>
+                                <nullability>ALL</nullability>
+                                <objectType>ALL</objectType>
                             </forcedType>
                             <forcedType>
                                 <name>TEXT</name> <!-- From CITEXT -->
-                                <expression>content.point_type.point_type_description</expression>
+                                <includeExpression>content.point_type.point_type_description</includeExpression>
+                                <nullability>ALL</nullability>
+                                <objectType>ALL</objectType>
                             </forcedType>
                             <forcedType>
                                 <name>TEXT</name> <!-- From CITEXT -->
-                                <expression>content.pointdata.point_type_title</expression>
+                                <includeExpression>content.pointdata.point_type_title</includeExpression>
+                                <nullability>ALL</nullability>
+                                <objectType>ALL</objectType>
                             </forcedType>
                             <forcedType>
                                 <name>TEXT</name> <!-- From CITEXT -->
-                                <expression>content.pointdata.point_type_description</expression>
+                                <includeExpression>content.pointdata.point_type_description</includeExpression>
+                                <nullability>ALL</nullability>
+                                <objectType>ALL</objectType>
                             </forcedType>
                         </forcedTypes>
 

@@ -23,6 +23,7 @@ import com.duopoints.db.tables.PointType.POINT_TYPE
 import com.duopoints.db.tables.PointTypeCategory.POINT_TYPE_CATEGORY
 import com.duopoints.db.tables.Pointdata.POINTDATA
 import java.sql.Timestamp
+import java.time.LocalDateTime
 
 @Service
 class PointService {
@@ -141,7 +142,7 @@ class PointService {
 
     fun getCompositePointEvents(userIDs: List<UUID>): List<CompositePointEvent> {
         // Set which insert sorted based on Creation timestamp of CompositePointEvent
-        val totalEvents = TreeSet(Comparator.comparing<CompositePointEvent, Timestamp> { it.createdUtc })
+        val totalEvents = TreeSet(Comparator.comparing<CompositePointEvent, LocalDateTime> { it.createdUtc })
 
         // First get the Users Relationships
         val relationships = relationshipService.getActiveUsersRelationship(userIDs)

@@ -4,6 +4,7 @@ import com.duopoints.db.tables.pojos.Point
 import com.duopoints.db.tables.pojos.PointEvent
 
 import java.sql.Timestamp
+import java.time.LocalDateTime
 import java.util.UUID
 
 class NewPointEvent : PointEvent {
@@ -21,7 +22,7 @@ class NewPointEvent : PointEvent {
         this.mediaCount = mediaCount
     }
 
-    constructor(pointEventUuid: UUID, pointGiverUserUuid: UUID, relationshipUuid: UUID, pointEventEmotionNumber: Short?, pointEventTitle: String, pointEventSubtitle: String, pointEventType: String, pointEventStatus: String, pointEventComment: String, pointEventLikes: Short?, createdUtc: Timestamp, lastModifiedUtc: Timestamp, points: List<Point>, mediaCount: Int) : super(pointEventUuid, pointGiverUserUuid, relationshipUuid, pointEventEmotionNumber, pointEventTitle, pointEventSubtitle, pointEventType, pointEventStatus, pointEventComment, pointEventLikes, createdUtc, lastModifiedUtc) {
+    constructor(pointEventUuid: UUID, pointGiverUserUuid: UUID, relationshipUuid: UUID, pointEventEmotionNumber: Short?, pointEventTitle: String, pointEventSubtitle: String, pointEventType: String, pointEventStatus: String, pointEventComment: String, pointEventLikes: Short?, createdUtc: LocalDateTime, lastModifiedUtc: LocalDateTime, points: List<Point>, mediaCount: Int) : super(pointEventUuid, pointGiverUserUuid, relationshipUuid, pointEventEmotionNumber, pointEventTitle, pointEventSubtitle, pointEventType, pointEventStatus, pointEventComment, pointEventLikes, createdUtc, lastModifiedUtc) {
         this.points = points
         this.mediaCount = mediaCount
     }

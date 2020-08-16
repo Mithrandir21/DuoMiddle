@@ -33,6 +33,7 @@ import java.util.UUID
 import com.duopoints.db.tables.Relationship.RELATIONSHIP
 import com.duopoints.db.tables.RelationshipBreakupRequest.RELATIONSHIP_BREAKUP_REQUEST
 import com.duopoints.db.tables.RelationshipRequest.RELATIONSHIP_REQUEST
+import java.time.LocalDateTime
 
 @Service
 class RelationshipService {
@@ -262,7 +263,7 @@ class RelationshipService {
         }
 
 
-        val waitUntil = Timestamp.from(ZonedDateTime.now(ZoneId.of("UTC")).plus(2, ChronoUnit.DAYS).toInstant())
+        val waitUntil = LocalDateTime.from(ZonedDateTime.now(ZoneId.of("UTC")).plus(2, ChronoUnit.DAYS).toInstant())
 
         val request = duo.insertInto(RELATIONSHIP_BREAKUP_REQUEST)
                 .columns(RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_UUID, RELATIONSHIP_BREAKUP_REQUEST.USER_UUID, RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_COMMENT, RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_STATUS, RELATIONSHIP_BREAKUP_REQUEST.RELATIONSHIP_BREAKUP_REQUEST_WAIT_UNTIL)
