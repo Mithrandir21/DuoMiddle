@@ -171,10 +171,10 @@ class FcmService(private val settings: FcmSettings) {
             getUserPushTokenRef(userAuthID).addListenerForSingleValueEvent(object : ConvenientListener() {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     if (dataSnapshot.value != null) {
-                        val sendMessage = SendMessage()
-                        sendMessage.to = dataSnapshot.value as String
-                        sendMessage.data = data
-
+                        val sendMessage = SendMessage(
+                                to = dataSnapshot.value as String,
+                                data = data
+                        )
                         send(sendMessage)
                     } else {
                         Logger.getGlobal().log(Level.INFO, "PushToken not found for userAuthID:$userAuthID")
