@@ -18,7 +18,6 @@ import org.jooq.impl.DefaultDSLContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
-import javax.validation.constraints.NotNull
 import java.util.ArrayList
 import java.util.UUID
 
@@ -26,6 +25,7 @@ import com.duopoints.db.tables.UserAddress.USER_ADDRESS
 import com.duopoints.db.tables.UserLevel.USER_LEVEL
 import com.duopoints.db.tables.UserLevelUpLike.USER_LEVEL_UP_LIKE
 import com.duopoints.db.tables.Userdata.USERDATA
+import org.jetbrains.annotations.NotNull
 import org.jooq.impl.DSL.row
 
 @Service

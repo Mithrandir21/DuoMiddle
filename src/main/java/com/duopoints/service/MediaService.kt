@@ -2,17 +2,15 @@ package com.duopoints.service
 
 import com.duopoints.db.tables.pojos.MediaObject
 import com.duopoints.db.tables.pojos.MediaObjectList
-import org.jooq.Record1
-import org.jooq.SelectConditionStep
 import org.jooq.impl.DefaultDSLContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
-import javax.validation.constraints.NotNull
 import java.util.UUID
 
 import com.duopoints.db.tables.MediaObject.MEDIA_OBJECT
 import com.duopoints.db.tables.MediaObjectList.MEDIA_OBJECT_LIST
+import org.jetbrains.annotations.NotNull
 
 @Service
 class MediaService {

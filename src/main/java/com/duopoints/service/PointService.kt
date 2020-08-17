@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import javax.validation.constraints.NotNull
 import java.util.*
 
 import com.duopoints.db.tables.PointEvent.POINT_EVENT
@@ -22,7 +21,6 @@ import com.duopoints.db.tables.PointEventLike.POINT_EVENT_LIKE
 import com.duopoints.db.tables.PointType.POINT_TYPE
 import com.duopoints.db.tables.PointTypeCategory.POINT_TYPE_CATEGORY
 import com.duopoints.db.tables.Pointdata.POINTDATA
-import java.sql.Timestamp
 import java.time.LocalDateTime
 
 @Service
